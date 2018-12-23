@@ -1,0 +1,27 @@
+package main
+
+import (
+	"github.com/mitchellh/cli"
+	"log"
+	"os"
+)
+
+var GitVersion = "dev"
+
+func main() {
+	c := cli.NewCLI("tuplip", GitVersion)
+	c.Args = os.Args[1:]
+	c.Commands = map[string]cli.CommandFactory{
+		"exec": func() (command cli.Command, e error) {
+			return new(ExecCommand), nil
+		},
+	}
+
+	exitStatus, err := c.Run()
+	if err != nil {
+		log.Println(err)
+	}
+
+	os.Exit(exitStatus)
+
+}
