@@ -1,4 +1,4 @@
-FROM gofunky/1.11.0-alpine3.8 as builder
+FROM gofunky/golang:1.11.0-alpine3.8 as builder
 
 COPY . $GOPATH/src/gofunky/tuplip/
 WORKDIR $GOPATH/src/gofunky/tuplip/
