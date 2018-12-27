@@ -6,7 +6,7 @@ WORKDIR $GOPATH/src/gofunky/tuplip/
 ENV GOOS=linux
 ENV GOARCH=amd64
 
-RUN go get -v -d
+RUN dep ensure
 RUN go build -v -o /go/bin/tuplip ./cmd/tuplip
 
 FROM gofunky/git:2.18.1
