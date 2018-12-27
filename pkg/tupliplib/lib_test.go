@@ -1,7 +1,6 @@
 package tupliplib
 
 import (
-	"github.com/deckarep/golang-set"
 	"reflect"
 	"strings"
 	"testing"
@@ -11,7 +10,7 @@ import (
 	"github.com/gofunky/automi/collectors"
 )
 
-func TestTuplipStream_Execute(t *testing.T) {
+func TestTuplipStream_FromReader(t *testing.T) {
 	type args struct {
 		input []string
 	}
@@ -90,7 +89,7 @@ func TestTuplipStream_Execute(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			src := strings.NewReader(strings.Join(tt.args.input, " "))
-			tStream := tt.t.FromScanner(src)
+			tStream := tt.t.FromReader(src)
 			collector := collectors.Slice()
 			tStream.Into(collector)
 			select {
@@ -247,9 +246,9 @@ func TestTuplip_parseVersions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotResult, err := tt.t.parseVersions(tt.args.withBase, tt.args.alias, tt.args.isShort, tt.args.version)
+			gotResult, err := tt.t.buildVersionSet(tt.args.withBase, tt.args.alias, tt.args.isShort, tt.args.version)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Tuplip.parseVersions() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Tuplip.buildVersionSet() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			wantSet := mapset.NewSet()
@@ -257,7 +256,7 @@ func TestTuplip_parseVersions(t *testing.T) {
 				wantSet.Add(e)
 			}
 			if !reflect.DeepEqual(gotResult, wantSet) {
-				t.Errorf("Tuplip.parseVersions() = %v, want %v", gotResult, wantSet)
+				t.Errorf("Tuplip.buildVersionSet() = %v, want %v", gotResult, wantSet)
 			}
 		})
 	}

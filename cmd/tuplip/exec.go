@@ -9,8 +9,10 @@ import (
 	"strings"
 )
 
+// The execution command of the binary.
 type ExecCommand struct{}
 
+// Run starts the execution process of the tuplip lib.
 func (c *ExecCommand) Run(args []string) int {
 	tuplip := tupliplib.Tuplip{}
 	for _, arg := range args {
@@ -28,6 +30,7 @@ func (c *ExecCommand) Run(args []string) int {
 	return execute(tuplip)
 }
 
+// Help gives the binary documentation that is printed in the help.
 func (c *ExecCommand) Help() string {
 	return "Create a power set of possible tag and version combinations and parse it in the Docker tagging style.\n" +
 		"Each input tag from the pipeline will be used to create combinations.\n" +
@@ -45,10 +48,12 @@ func (c *ExecCommand) Help() string {
 		"--excludeBase to exclude the base without version suffix from the power set\n"
 }
 
+// Synopsis gives a short description of the purpose.
 func (c *ExecCommand) Synopsis() string {
-	return "Run tuplip"
+	return "generate all Docker tags"
 }
 
+// execute reads the input and prints the output of tuplip.
 func execute(tuplip tupliplib.Tuplip) int {
 	reader := bufio.NewReader(os.Stdin)
 	tuplipStream := tuplip.FromScanner(reader)

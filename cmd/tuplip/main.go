@@ -8,6 +8,7 @@ import (
 
 var GitVersion = "dev"
 
+// main builds a command factory and starts it for the binary.
 func main() {
 	c := cli.NewCLI("tuplip", GitVersion)
 	c.Args = os.Args[1:]
