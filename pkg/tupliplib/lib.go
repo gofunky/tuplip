@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/blang/semver"
+	"github.com/deckarep/golang-set"
 	"github.com/gofunky/automi/emitters"
 	"github.com/gofunky/automi/stream"
 	"io"

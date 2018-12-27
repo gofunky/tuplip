@@ -56,7 +56,7 @@ func (c *ExecCommand) Synopsis() string {
 // execute reads the input and prints the output of tuplip.
 func execute(tuplip tupliplib.Tuplip) int {
 	reader := bufio.NewReader(os.Stdin)
-	tuplipStream := tuplip.FromScanner(reader)
+	tuplipStream := tuplip.FromReader(reader)
 	lineSplit := func(input string) string {
 		return fmt.Sprintln(input)
 	}
