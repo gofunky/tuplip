@@ -1,7 +1,7 @@
 FROM gofunky/golang:1.11.0-alpine3.8 as builder
 
-COPY . $GOPATH/src/gofunky/tuplip
-WORKDIR $GOPATH/src/gofunky/tuplip/
+COPY . $GOPATH/src/github.com/gofunky/tuplip
+WORKDIR $GOPATH/src/github.com/gofunky/tuplip/
 
 ENV GOOS=linux
 ENV GOARCH=amd64
