@@ -14,13 +14,13 @@ import (
 
 // Tuplip contains the parameters for the Docker tag generation.
 type Tuplip struct {
-	// Exclude the major versions from the result set.
+	// ExcludeMajor excludes the major versions from the result set.
 	ExcludeMajor bool
-	// Exclude the minor versions from the result set.
+	// ExcludeMinor excludes the minor versions from the result set.
 	ExcludeMinor bool
-	// Exclude the base alias without version suffix from the result set.
+	// ExcludeBase excludes the base alias without version suffix from the result set.
 	ExcludeBase bool
-	// Add an additional 'latest' tag to the result set.
+	// AddLatest adds an additional 'latest' tag to the result set.
 	AddLatest bool
 }
 

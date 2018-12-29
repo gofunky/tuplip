@@ -2,7 +2,7 @@ package tupliplib
 
 import "github.com/deckarep/golang-set"
 
-// A slice of map sets to make them sortable.
+// SortedSet is a a slice of map sets to make them sortable.
 // It will be sorted alphabetically by the string representations of the subsets.
 type SortedSet []mapset.Set
 

@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// The execution command of the binary.
+// ExecCommand depicts the execution command of the binary.
 type ExecCommand struct{}
 
 // Run starts the execution process of the tuplip lib.

@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// GitVersion is to be replaced by the build version during build time.
 var GitVersion = "dev"
 
 // main builds a command factory and starts it for the binary.
