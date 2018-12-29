@@ -11,3 +11,168 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/gofunky/tuplip.svg)](https://hub.docker.com/r/gofunky/tuplip)
 
 generate a complete set of Docker tags that depict all tuples of dependency versions
+
+## Installation
+
+### Using `go get`
+
+```bash
+go get -u github.com/gofunky/tuplip
+```
+
+### Using Docker
+
+```bash
+docker pull gofunky/tuplip
+```
+
+##Using tulip
+
+### Using the binary
+
+```bash
+echo "latest _:1.0.0" | tuplip exec
+```
+
+### Using Docker
+
+```bash
+echo "latest _:1.0.0" | docker run --rm -i gofunky/tuplip exec
+```
+
+## Standard Input
+
+Separate the input tags either by newlines or by spaces.
+
+### Unversioned Aliases
+
+Unversioned input tags define dependencies without versions or special build parameters that define a separate output portion.
+
+#### Example
+
+```bash
+echo "something fancy" | tuplip exec
+```
+
+#### Result
+
+```bash
+something
+fancy
+fancy-something
+```
+
+### Versioned Aliases
+
+Versioned input tags define dependencies with versions.
+Then, the version is altered and depicted in all its variants.
+
+#### Example
+
+```bash
+echo "go:1.2.3" | tuplip exec
+```
+
+#### Result
+
+```bash
+go
+go1
+go1.2
+go1.2.3
+```
+
+### Versioned Wildcard Aliases
+
+A versioned wildcard input tag is used to depict the different version representation of the project itself.
+
+#### Example
+
+```bash
+echo "_:1.0 dep" | tuplip exec
+```
+
+#### Result
+
+```bash
+1
+1.0
+dep
+1-dep
+1.0-dep
+```
+
+## Parameters
+
+### excludeMajor
+
+`excludeMajor` excludes the major versions (e.g., `go1` for `go:1.2.3`) from the result set.
+
+#### Example
+
+```bash
+echo "go:1.2.3" | tuplip exec excludeMajor
+```
+
+#### Result
+
+```bash
+go
+go1.2
+go1.2.3
+```
+
+### excludeMinor
+
+`excludeMinor` excludes the minor versions (e.g., `go1.2` for `go:1.2.3`) from the result set.
+
+#### Example
+
+```bash
+echo "go:1.2.3" | tuplip exec excludeMinor
+```
+
+#### Result
+
+```bash
+go
+go1
+go1.2.3
+```
+
+### excludeBase
+
+`excludeBase` excludes the base alias (e.g., `go` for `go:1.2.3`) from the result set.
+
+#### Example
+
+```bash
+echo "go:1.2.3" | tuplip exec excludeBase
+```
+
+#### Result
+
+```bash
+go1
+go1.2
+go1.2.3
+```
+
+### addLatest
+
+`addLatest` adds the `latest` tag to the result set.
+
+#### Example
+
+```bash
+echo "_:1.2.3" | tuplip exec addLatest
+```
+
+#### Result
+
+```bash
+1
+1.2
+1.2.3
+latest
+```
