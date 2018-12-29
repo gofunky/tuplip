@@ -9,7 +9,7 @@ ENV GOARCH=amd64
 ARG VERSION=latest
 
 RUN dep ensure
-RUN go build -v -o /go/bin/tuplip ./cmd/tuplip -ldflags "-X main.GitVersion=$VERSION"
+RUN go build -v -o /go/bin/tuplip -ldflags "-X main.GitVersion=$VERSION" ./cmd/tuplip
 
 FROM gofunky/git:2.18.1
 LABEL maintainer="mat@fax.fyi"
