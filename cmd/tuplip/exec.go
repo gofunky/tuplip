@@ -26,7 +26,7 @@ func (c *ExecCommand) Run(args []string) int {
 		if strings.Contains(lowerArg, "excludebase") {
 			tuplip.ExcludeBase = true
 		}
-		if strings.Contains(lowerArg, "addLatest") {
+		if strings.Contains(lowerArg, "addlatest") {
 			tuplip.AddLatest = true
 		}
 	}
