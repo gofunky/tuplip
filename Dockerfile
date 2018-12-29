@@ -6,8 +6,10 @@ WORKDIR $GOPATH/src/gofunky/tuplip/
 ENV GOOS=linux
 ENV GOARCH=amd64
 
+ARG VERSION=latest
+
 RUN dep ensure
-RUN go build -v -o /go/bin/tuplip ./cmd/tuplip
+RUN go build -v -o /go/bin/tuplip ./cmd/tuplip -ldflags "-X main.GitVersion=$VERSION"
 
 FROM gofunky/git:2.18.1
 LABEL maintainer="mat@fax.fyi"
@@ -23,6 +25,5 @@ ARG VCS_REF
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-url="https://github.com/gofunky/tuplip" \
-      org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.version=$VERSION \
       org.label-schema.schema-version="1.0"
