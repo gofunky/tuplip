@@ -34,23 +34,23 @@ func TestTuplipStream_FromReader(t *testing.T) {
 		},
 		{
 			name: "Simple Unary Tag",
-			args: args{[]string{"latest"}},
-			want: []string{"latest"},
+			args: args{[]string{"alias"}},
+			want: []string{"alias"},
 		},
 		{
 			name: "Simple Binary Tag",
-			args: args{[]string{"latest", "foo"}},
-			want: []string{"latest", "foo", "foo-latest"},
+			args: args{[]string{"alias", "foo"}},
+			want: []string{"alias", "foo", "alias-foo"},
 		},
 		{
 			name: "Simple Tertiary Tag",
-			args: args{[]string{"latest", "foo", "boo"}},
-			want: []string{"latest", "foo", "foo-latest", "boo", "boo-latest", "boo-foo", "boo-foo-latest"},
+			args: args{[]string{"alias", "foo", "boo"}},
+			want: []string{"alias", "foo", "alias-foo", "boo", "alias-boo", "boo-foo", "alias-boo-foo"},
 		},
 		{
 			name: "Simple Binary Tag With Short Version",
-			args: args{[]string{"latest", "foo:2.0"}},
-			want: []string{"latest", "foo", "foo2", "foo2.0", "foo-latest", "foo2-latest", "foo2.0-latest"},
+			args: args{[]string{"alias", "foo:2.0"}},
+			want: []string{"alias", "foo", "foo2", "foo2.0", "alias-foo", "alias-foo2", "alias-foo2.0"},
 		},
 		{
 			name: "Simple Unary Tag With Long Version",
@@ -59,20 +59,20 @@ func TestTuplipStream_FromReader(t *testing.T) {
 		},
 		{
 			name: "Wildcard Binary Tag With Long Version",
-			args: args{[]string{"_:2.0.0", "latest"}},
-			want: []string{"latest", "2", "2.0", "2.0.0", "2-latest", "2.0-latest", "2.0.0-latest"},
+			args: args{[]string{"_:2.0.0", "alias"}},
+			want: []string{"alias", "2", "2.0", "2.0.0", "2-alias", "2.0-alias", "2.0.0-alias"},
 		},
 		{
 			name: "Wildcard Binary Tag With Long Version And Major Exclusion",
 			t:    Tuplip{ExcludeMajor: true},
-			args: args{[]string{"_:2.0.0", "latest"}},
-			want: []string{"latest", "2.0", "2.0.0", "2.0-latest", "2.0.0-latest"},
+			args: args{[]string{"_:2.0.0", "alias"}},
+			want: []string{"alias", "2.0", "2.0.0", "2.0-alias", "2.0.0-alias"},
 		},
 		{
 			name: "Wildcard Binary Tag With Long Version And Minor Exclusion",
 			t:    Tuplip{ExcludeMinor: true},
-			args: args{[]string{"_:2.0.0", "latest"}},
-			want: []string{"latest", "2", "2.0.0", "2-latest", "2.0.0-latest"},
+			args: args{[]string{"_:2.0.0", "alias"}},
+			want: []string{"alias", "2", "2.0.0", "2-alias", "2.0.0-alias"},
 		},
 		{
 			name: "Simple Unary Tag With Long Version And Base Exclusion",
@@ -85,6 +85,12 @@ func TestTuplipStream_FromReader(t *testing.T) {
 			t:    Tuplip{ExcludeBase: true},
 			args: args{[]string{"_:2.0.0"}},
 			want: []string{"2", "2.0", "2.0.0"},
+		},
+		{
+			name: "Wildcard Unary Tag With Long Version And Latest Addition",
+			t:    Tuplip{AddLatest: true},
+			args: args{[]string{"_:2.0.0", "foo"}},
+			want: []string{"latest", "foo", "2", "2.0", "2.0.0", "2-foo", "2.0-foo", "2.0.0-foo"},
 		},
 	}
 	for _, tt := range tests {

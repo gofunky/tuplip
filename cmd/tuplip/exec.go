@@ -26,6 +26,9 @@ func (c *ExecCommand) Run(args []string) int {
 		if strings.Contains(lowerArg, "excludebase") {
 			tuplip.ExcludeBase = true
 		}
+		if strings.Contains(lowerArg, "addLatest") {
+			tuplip.AddLatest = true
+		}
 	}
 	return execute(tuplip)
 }
@@ -43,9 +46,10 @@ func (c *ExecCommand) Help() string {
 		"\nBeside the versions of the image dependencies, use the version product for your image version " +
 		"by setting '_' as the version alias (e.g., as in '_:1.0.0').\n" +
 		"\nOptionally, use the following arguments to reduce the number of returned tags:\n" +
-		"--excludeMajor to exclude the major versions from the power set\n" +
-		"--excludeMinor to exclude the minor versions from the power set\n" +
-		"--excludeBase to exclude the base without version suffix from the power set\n"
+		"--excludeMajor to exclude the major versions from the result set\n" +
+		"--excludeMinor to exclude the minor versions from the result set\n" +
+		"--excludeBase to exclude the base alias without version suffix from the result set\n" +
+		"--addLatest to add an additional 'latest' tag to the result set\n"
 }
 
 // Synopsis gives a short description of the purpose.

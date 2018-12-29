@@ -12,10 +12,16 @@ import (
 	"strings"
 )
 
+// Tuplip contains the parameters for the Docker tag generation.
 type Tuplip struct {
+	// Exclude the major versions from the result set.
 	ExcludeMajor bool
+	// Exclude the minor versions from the result set.
 	ExcludeMinor bool
-	ExcludeBase  bool
+	// Exclude the base alias without version suffix from the result set.
+	ExcludeBase bool
+	// Add an additional 'latest' tag to the result set.
+	AddLatest bool
 }
 
 // The separator that separates the alias form the semantic version.
@@ -182,7 +188,15 @@ func (t Tuplip) join(inputSet mapset.Set) (result mapset.Set) {
 	return result
 }
 
-// Build a tuplip stream from a io.Reader as scanner. The returned stream has no configured sink.
+// addLatestTag adds an additional latest tag if requested in *Tuplip.
+func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
+	if t.AddLatest {
+		inputSet.Add(mapset.NewSet(mapset.NewSet("latest")))
+	}
+	return inputSet
+}
+
+// FromReader builds a tuplip stream from a io.Reader as scanner. The returned stream has no configured sink.
 func (t Tuplip) FromReader(src io.Reader) *stream.Stream {
 	iStream := stream.New(emitters.Scanner(src, nil))
 	iStream.FlatMap(t.splitBySeparator)
@@ -191,6 +205,7 @@ func (t Tuplip) FromReader(src io.Reader) *stream.Stream {
 	iStream.Map(t.packInSet)
 	iStream.Reduce(mapset.NewSet(), t.mergeSets)
 	iStream.Map(t.power)
+	iStream.Map(t.addLatestTag)
 	iStream.FlatMap(t.failOnEmpty)
 	iStream.FlatMap(t.join)
 	iStream.Filter(t.nonEmpty)
