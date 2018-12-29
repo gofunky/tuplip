@@ -31,13 +31,13 @@ docker pull gofunky/tuplip
 ### Using the binary
 
 ```bash
-echo "latest _:1.0.0" | tuplip exec
+echo "dep _:1.0.0" | tuplip exec
 ```
 
 ### Using Docker
 
 ```bash
-echo "latest _:1.0.0" | docker run --rm -i gofunky/tuplip exec
+echo "dep _:1.0.0" | docker run --rm -i gofunky/tuplip exec
 ```
 
 ## Standard Input
