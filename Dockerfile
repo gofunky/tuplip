@@ -8,7 +8,7 @@ ENV GOARCH=amd64
 
 ARG VERSION=latest
 
-RUN dep ensure
+RUN dep ensure -v -vendor-only
 RUN go build -v -o /go/bin/tuplip -ldflags "-X main.GitVersion=$VERSION" ./cmd/tuplip
 
 FROM gofunky/git:2.18.1
