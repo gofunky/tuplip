@@ -22,19 +22,25 @@ type Tuplip struct {
 	ExcludeBase bool
 	// AddLatest adds an additional 'latest' tag to the result set.
 	AddLatest bool
+	// Separator to split the separate tag vector aliases. The default separator is single space.
+	Separator string
 }
 
-// The separator that separates the alias form the semantic version.
+// VersionSeparator is the separator that separates the alias form the semantic version.
 const VersionSeparator = ":"
 
-// The alias for a wildcard dependency to build a base tag (i.e., semantic version without a prefix).
+// WildcardDependency is the alias for a wildcard dependency to build a root tag vector
+// (i.e., semantic version without a prefix).
 const WildcardDependency = "_"
 
-// The separator that separates the digits of a semantic version.
+// VersionDot is the separator that separates the digits of a semantic version.
 const VersionDot = "."
 
-// The separator that separates the sub tags in a Docker tag.
+// DockerTagSeparator is the separator that separates the sub tags in a Docker tag.
 const DockerTagSeparator = "-"
+
+// VectorSeparator is the default tag vector separator.
+const VectorSeparator = " "
 
 // buildTag parses a semantic version with the given version digits. Optionally, prefix an alias tag.
 func (t Tuplip) buildTag(withBase bool, alias string, versionDigits ...uint64) (string, error) {
@@ -132,9 +138,16 @@ func (t Tuplip) nonEmpty(input string) bool {
 	return input != ""
 }
 
-// splitBySeparator separates the input string by an empty char.
+// splitBySeparator separates the input string by the chosen character and trims superfluous spaces.
 func (t Tuplip) splitBySeparator(input string) (result []string) {
-	return strings.Split(input, " ")
+	if t.Separator == "" {
+		t.Separator = VectorSeparator
+	}
+	result = strings.Split(input, t.Separator)
+	for i, el := range result {
+		result[i] = strings.TrimSpace(el)
+	}
+	return
 }
 
 // packInSet packs a set as subset into a new set.
@@ -162,7 +175,7 @@ func (t Tuplip) failOnEmpty(inputSet mapset.Set) (mapset.Set, error) {
 
 // join joins all subtags (i.e., elements of the given set) to all possible representations by building a cartesian
 // product of them. The subtags are separated by the given Docker separator. The subtags are ordered alphabetically
-// to ensure that a base tag (i.e., a tag without an alias) is mentioned before alias tags.
+// to ensure that a root tag vector (i.e., a tag without an alias) is mentioned before alias tags.
 func (t Tuplip) join(inputSet mapset.Set) (result mapset.Set) {
 	result = mapset.NewSet()
 	inputSlice := inputSet.ToSlice()

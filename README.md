@@ -176,3 +176,21 @@ echo "_:1.2.3" | tuplip exec addLatest
 1.2.3
 latest
 ```
+
+### vectorSeparator
+
+`vectorSeparator` sets a different tag vector separator than the default space character.
+
+#### Example
+
+```bash
+echo "something; fancy" | tuplip exec vectorSeparator=";"
+```
+
+#### Result
+
+```bash
+something
+fancy
+fancy-something
+```

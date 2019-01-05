@@ -29,6 +29,14 @@ func (c *ExecCommand) Run(args []string) int {
 		if strings.Contains(lowerArg, "addlatest") {
 			tuplip.AddLatest = true
 		}
+		if strings.Contains(lowerArg, "vectorseparator") {
+			sepArg := strings.SplitAfter(arg, "=")
+			if len(sepArg) < 2 || len(sepArg[1]) == 0 {
+				fmt.Fprintln(os.Stderr, "warning: the given tag vector separator is invalid, falling back to space")
+			} else {
+				tuplip.Separator = sepArg[1]
+			}
+		}
 	}
 	return execute(tuplip)
 }
@@ -49,7 +57,8 @@ func (c *ExecCommand) Help() string {
 		"excludeMajor to exclude the major versions from the result set\n" +
 		"excludeMinor to exclude the minor versions from the result set\n" +
 		"excludeBase to exclude the base alias without version suffix from the result set\n" +
-		"addLatest to add an additional 'latest' tag to the result set\n"
+		"addLatest to add an additional 'latest' tag to the result set\n" +
+		"vectorSeparator=% to choose a different tag vector separator than the default space character\n"
 }
 
 // Synopsis gives a short description of the purpose.

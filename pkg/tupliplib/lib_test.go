@@ -92,6 +92,12 @@ func TestTuplipStream_FromReader(t *testing.T) {
 			args: args{[]string{"_:2.0.0", "foo"}},
 			want: []string{"latest", "foo", "2", "2.0", "2.0.0", "2-foo", "2.0-foo", "2.0.0-foo"},
 		},
+		{
+			name: "Wildcard Unary Tag With Long Version And a Different Separator",
+			t:    Tuplip{Separator: ";"},
+			args: args{[]string{" _:2.0.0; foo "}},
+			want: []string{"foo", "2", "2.0", "2.0.0", "2-foo", "2.0-foo", "2.0.0-foo"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -389,6 +395,12 @@ func TestTuplip_splitBySeparator(t *testing.T) {
 		{
 			name:       "Split Tuple",
 			args:       args{"foo boo hoo"},
+			wantResult: []string{"foo", "boo", "hoo"},
+		},
+		{
+			name:       "Split Tuple With Different Separator",
+			t:          Tuplip{Separator: ","},
+			args:       args{"foo, boo,hoo"},
 			wantResult: []string{"foo", "boo", "hoo"},
 		},
 	}
