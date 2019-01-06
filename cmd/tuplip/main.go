@@ -14,8 +14,8 @@ func main() {
 	c := cli.NewCLI("tuplip", GitVersion)
 	c.Args = os.Args[1:]
 	c.Commands = map[string]cli.CommandFactory{
-		"exec": func() (command cli.Command, e error) {
-			return new(ExecCommand), nil
+		"build": func() (command cli.Command, e error) {
+			return new(BuildCommand), nil
 		},
 	}
 

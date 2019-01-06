@@ -31,13 +31,13 @@ docker pull gofunky/tuplip
 ### Using the binary
 
 ```bash
-echo "dep _:1.0.0" | tuplip exec
+echo "dep _:1.0.0" | tuplip build
 ```
 
 ### Using Docker
 
 ```bash
-echo "dep _:1.0.0" | docker run --rm -i gofunky/tuplip exec
+echo "dep _:1.0.0" | docker run --rm -i gofunky/tuplip build
 ```
 
 ## Standard Input
@@ -51,7 +51,7 @@ Unversioned input tags define dependencies without versions or special build par
 #### Example
 
 ```bash
-echo "something fancy" | tuplip exec
+echo "something fancy" | tuplip build
 ```
 
 #### Result
@@ -70,7 +70,7 @@ Then, the version is altered and depicted in all its variants.
 #### Example
 
 ```bash
-echo "go:1.2.3" | tuplip exec
+echo "go:1.2.3" | tuplip build
 ```
 
 #### Result
@@ -89,7 +89,7 @@ A versioned wildcard input tag is used to depict the different version represent
 #### Example
 
 ```bash
-echo "_:1.0 dep" | tuplip exec
+echo "_:1.0 dep" | tuplip build
 ```
 
 #### Result
@@ -111,7 +111,7 @@ dep
 #### Example
 
 ```bash
-echo "go:1.2.3" | tuplip exec excludeMajor
+echo "go:1.2.3" | tuplip build excludeMajor
 ```
 
 #### Result
@@ -129,7 +129,7 @@ go1.2.3
 #### Example
 
 ```bash
-echo "go:1.2.3" | tuplip exec excludeMinor
+echo "go:1.2.3" | tuplip build excludeMinor
 ```
 
 #### Result
@@ -147,7 +147,7 @@ go1.2.3
 #### Example
 
 ```bash
-echo "go:1.2.3" | tuplip exec excludeBase
+echo "go:1.2.3" | tuplip build excludeBase
 ```
 
 #### Result
@@ -165,7 +165,7 @@ go1.2.3
 #### Example
 
 ```bash
-echo "_:1.2.3" | tuplip exec addLatest
+echo "_:1.2.3" | tuplip build addLatest
 ```
 
 #### Result
@@ -184,7 +184,7 @@ latest
 #### Example
 
 ```bash
-echo "something; fancy" | tuplip exec vectorSeparator=";"
+echo "something; fancy" | tuplip build vectorSeparator=";"
 ```
 
 #### Result

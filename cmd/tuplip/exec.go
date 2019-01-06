@@ -9,11 +9,11 @@ import (
 	"strings"
 )
 
-// ExecCommand depicts the execution command of the binary.
-type ExecCommand struct{}
+// BuildCommand depicts the execution command of the binary.
+type BuildCommand struct{}
 
 // Run starts the execution process of the tuplip lib.
-func (c *ExecCommand) Run(args []string) int {
+func (c *BuildCommand) Run(args []string) int {
 	tuplip := tupliplib.Tuplip{}
 	for _, arg := range args {
 		lowerArg := strings.ToLower(arg)
@@ -42,7 +42,7 @@ func (c *ExecCommand) Run(args []string) int {
 }
 
 // Help gives the binary documentation that is printed in the help.
-func (c *ExecCommand) Help() string {
+func (c *BuildCommand) Help() string {
 	return "Create a power set of possible tag and version combinations and parse it in the Docker tagging style.\n" +
 		"Each input tag from the pipeline will be used to create combinations.\n" +
 		"For instance, 'latest foo' creates 'latest', 'foo', and 'latest-foo' to depict all possibilities.\n" +
@@ -62,7 +62,7 @@ func (c *ExecCommand) Help() string {
 }
 
 // Synopsis gives a short description of the purpose.
-func (c *ExecCommand) Synopsis() string {
+func (c *BuildCommand) Synopsis() string {
 	return "generate all Docker tags"
 }
 
