@@ -26,7 +26,7 @@ go get -u github.com/gofunky/tuplip
 docker pull gofunky/tuplip
 ```
 
-## Using tulip
+## Using tuplip
 
 ### Using the binary
 
