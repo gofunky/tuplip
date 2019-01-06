@@ -222,36 +222,6 @@ func TestTuplip_splitVersion(t *testing.T) {
 	}
 }
 
-func TestTuplip_nonEmpty(t *testing.T) {
-	type args struct {
-		input string
-	}
-	tests := []struct {
-		name string
-		t    Tuplip
-		args args
-		want bool
-	}{
-		{
-			name: "Empty String",
-			args: args{""},
-			want: false,
-		},
-		{
-			name: "Nonempty String",
-			args: args{"foo"},
-			want: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.t.nonEmpty(tt.args.input); got != tt.want {
-				t.Errorf("Tuplip.nonEmpty() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestTuplip_splitBySeparator(t *testing.T) {
 	type args struct {
 		input string
@@ -286,80 +256,9 @@ func TestTuplip_splitBySeparator(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.t.check()
 			if gotResult := tt.t.splitBySeparator(tt.args.input); !reflect.DeepEqual(gotResult, tt.wantResult) {
 				t.Errorf("Tuplip.splitBySeparator() = %v, want %v", gotResult, tt.wantResult)
-			}
-		})
-	}
-}
-
-func TestTuplip_packInSet(t *testing.T) {
-	type args struct {
-		subSet mapset.Set
-	}
-	tests := []struct {
-		name       string
-		t          Tuplip
-		args       args
-		wantResult mapset.Set
-	}{
-		{
-			name:       "Empty Set",
-			args:       args{mapset.NewSet()},
-			wantResult: mapset.NewSetWith(mapset.NewSet()),
-		},
-		{
-			name:       "Unary Set",
-			args:       args{mapset.NewSet("foo")},
-			wantResult: mapset.NewSetWith(mapset.NewSet("foo")),
-		},
-		{
-			name:       "Tuple Set",
-			args:       args{mapset.NewSet("foo", "boo")},
-			wantResult: mapset.NewSetWith(mapset.NewSet("foo", "boo")),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if gotResult := tt.t.packInSet(tt.args.subSet); !reflect.DeepEqual(gotResult.ToSlice(),
-				tt.wantResult.ToSlice()) {
-				t.Errorf("Tuplip.packInSet() = %v, want %v", gotResult, tt.wantResult)
-			}
-		})
-	}
-}
-
-func TestTuplip_mergeSets(t *testing.T) {
-	type args struct {
-		left  mapset.Set
-		right mapset.Set
-	}
-	tests := []struct {
-		name       string
-		t          Tuplip
-		args       args
-		wantResult mapset.Set
-	}{
-		{
-			name:       "Merge Empty Sets",
-			args:       args{mapset.NewSet(), mapset.NewSet()},
-			wantResult: mapset.NewSet(),
-		},
-		{
-			name:       "Merge Empty Set With Nonempty Set",
-			args:       args{mapset.NewSet(), mapset.NewSet("foo")},
-			wantResult: mapset.NewSet("foo"),
-		},
-		{
-			name:       "Merge Two Nonempty Sets",
-			args:       args{mapset.NewSet("foo", "boo"), mapset.NewSet("hoo")},
-			wantResult: mapset.NewSet("foo", "boo", "hoo"),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if gotResult := tt.t.mergeSets(tt.args.left, tt.args.right); !reflect.DeepEqual(gotResult, tt.wantResult) {
-				t.Errorf("Tuplip.mergeSets() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})
 	}
@@ -410,102 +309,6 @@ func TestTuplip_join(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotResult := tt.t.join(tt.args.inputSet); !reflect.DeepEqual(gotResult, tt.wantResult) {
 				t.Errorf("Tuplip.join() = %v, want %v", gotResult, tt.wantResult)
-			}
-		})
-	}
-}
-
-func TestTuplip_power(t *testing.T) {
-	type args struct {
-		inputSet mapset.Set
-	}
-	tests := []struct {
-		name string
-		t    Tuplip
-		args args
-		want []mapset.Set
-	}{
-		{
-			name: "Empty Set",
-			args: args{mapset.NewSet()},
-			want: []mapset.Set{
-				mapset.NewSet(),
-			},
-		},
-		{
-			name: "Unary Set",
-			args: args{mapset.NewSet("alias")},
-			want: []mapset.Set{
-				mapset.NewSet(),
-				mapset.NewSet("alias"),
-			},
-		},
-		{
-			name: "Binary Set",
-			args: args{mapset.NewSet("alias", "foo")},
-			want: []mapset.Set{
-				mapset.NewSet(),
-				mapset.NewSet("alias"),
-				mapset.NewSet("foo"),
-				mapset.NewSet("alias", "foo"),
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := tt.t.power(tt.args.inputSet).ToSlice()
-			for _, tagSet := range tt.want {
-				var found bool
-				for _, val := range got {
-					if tagSet.Equal(val.(mapset.Set)) {
-						found = true
-					}
-				}
-				if !found {
-					t.Errorf("Tuplip.power() = %v, want %v, missing %v", got, tt.want, tagSet)
-				}
-			}
-		})
-	}
-}
-
-func TestTuplip_failOnEmpty(t *testing.T) {
-	nonemptySet := mapset.NewSet(mapset.NewSet(), mapset.NewSet("alias"))
-	type args struct {
-		inputSet mapset.Set
-	}
-	tests := []struct {
-		name    string
-		t       Tuplip
-		args    args
-		want    mapset.Set
-		wantErr bool
-	}{
-		{
-			name:    "Empty Set",
-			args:    args{mapset.NewSet()},
-			wantErr: true,
-		},
-		{
-			name:    "Empty Power Set",
-			args:    args{mapset.NewSet(mapset.NewSet())},
-			wantErr: true,
-		},
-		{
-			name: "Nonempty Power Set",
-			args: args{nonemptySet},
-			want: nonemptySet,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.t.failOnEmpty(tt.args.inputSet)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Tuplip.failOnEmpty() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Tuplip.failOnEmpty() = %v, want %v", got, tt.want)
 			}
 		})
 	}

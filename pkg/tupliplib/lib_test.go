@@ -107,7 +107,7 @@ func TestTuplipStream_BuildFromReader(t *testing.T) {
 			select {
 			case gotErr := <-tStream.Open():
 				if (gotErr != nil) != tt.wantErr {
-					t.Errorf("Tuplip.Open() error = %v, wantErr %v", gotErr, tt.wantErr)
+					t.Errorf("Tuplip.Build() error = %v, wantErr %v", gotErr, tt.wantErr)
 					return
 				}
 			case <-time.After(500 * time.Millisecond):
@@ -119,8 +119,136 @@ func TestTuplipStream_BuildFromReader(t *testing.T) {
 				wantSet.Add(w)
 			}
 			if !gotOutput.Equal(wantSet) {
+				t.Errorf("Tuplip.Build() = %v, want %v, difference %v",
+					gotOutput, wantSet, gotOutput.Difference(wantSet))
+			}
+		})
+	}
+}
+
+func TestTuplipStream_FindFromReader(t *testing.T) {
+	type args struct {
+		input []string
+	}
+	tests := []struct {
+		name    string
+		t       Tuplip
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "Empty Repository",
+			args:    args{[]string{""}},
+			wantErr: true,
+		},
+		{
+			name:    "Input No Match",
+			t:       Tuplip{Repository: "gofunky/git"},
+			args:    args{[]string{"unknown"}},
+			wantErr: true,
+		},
+		{
+			name: "Simple Unary Tag",
+			t:    Tuplip{Repository: "gofunky/git"},
+			args: args{[]string{"envload"}},
+			want: "envload",
+		},
+		{
+			name: "Simple Binary Tag",
+			t:    Tuplip{Repository: "gofunky/git"},
+			args: args{[]string{"envload", "alpine:3.8"}},
+			want: "alpine3.8-envload",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			src := strings.NewReader(strings.Join(tt.args.input, " "))
+			tuplipSrc := tt.t.FromReader(src)
+			tStream, srcErr := tuplipSrc.Find()
+			collector := collectors.Slice()
+			var gotErr error
+			if tStream != nil {
+				tStream.Into(collector)
+				select {
+				case gotErr = <-tStream.Open():
+
+				case <-time.After(500 * time.Millisecond):
+					t.Fatal("Waited too long ...")
+					return
+				}
+			}
+			if (gotErr != nil || srcErr != nil) != tt.wantErr {
+				t.Errorf("Tuplip.Open() error = %v, wantErr %v", gotErr, tt.wantErr)
+				return
+			}
+			gotOutput := mapset.NewSetFromSlice(collector.Get())
+			wantSet := mapset.NewSet(tt.want)
+			if !tt.wantErr && !gotOutput.Equal(wantSet) {
 				t.Errorf("Tuplip.Open() = %v, want %v, difference %v",
 					gotOutput, wantSet, gotOutput.Difference(wantSet))
+			}
+		})
+	}
+}
+
+func TestTuplip_getTags(t *testing.T) {
+	type fields struct {
+		ExcludeMajor bool
+		ExcludeMinor bool
+		ExcludeBase  bool
+		AddLatest    bool
+		Separator    string
+		Repository   string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name:    "Unknown Repository",
+			fields:  fields{Repository: "gofunky/unknown"},
+			wantErr: true,
+		},
+		{
+			name:    "Invalid Repository Name",
+			fields:  fields{Repository: "$%"},
+			wantErr: true,
+		},
+		{
+			name:    "Empty Repository Name",
+			fields:  fields{Repository: ""},
+			wantErr: true,
+		},
+		{
+			name:    "Unary Repository",
+			fields:  fields{Repository: "alpine"},
+			wantErr: true, // TODO: find a way to check official images
+		},
+		{
+			name:   "Binary Repository",
+			fields: fields{Repository: "gofunky/git"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tu := &Tuplip{
+				ExcludeMajor: tt.fields.ExcludeMajor,
+				ExcludeMinor: tt.fields.ExcludeMinor,
+				ExcludeBase:  tt.fields.ExcludeBase,
+				AddLatest:    tt.fields.AddLatest,
+				Separator:    tt.fields.Separator,
+				Repository:   tt.fields.Repository,
+			}
+			tagSet, err := tu.getTags()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Tuplip.getTags() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && len(tagSet) == 0 {
+				t.Errorf("Tuplip.getTags() returned no tags")
+				return
 			}
 		})
 	}

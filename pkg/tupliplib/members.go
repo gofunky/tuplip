@@ -1,7 +1,6 @@
 package tupliplib
 
 import (
-	"errors"
 	"fmt"
 	"github.com/blang/semver"
 	"github.com/deckarep/golang-set"
@@ -100,11 +99,6 @@ func (t Tuplip) splitVersion(inputTag string) (result mapset.Set, err error) {
 	}
 }
 
-// nonEmpty marks if a string is not empty.
-func (t Tuplip) nonEmpty(input string) bool {
-	return input != ""
-}
-
 // splitBySeparator separates the input string by the chosen character and trims superfluous spaces.
 func (t Tuplip) splitBySeparator(input string) (result []string) {
 	result = strings.Split(input, t.Separator)
@@ -112,29 +106,6 @@ func (t Tuplip) splitBySeparator(input string) (result []string) {
 		result[i] = strings.TrimSpace(el)
 	}
 	return
-}
-
-// packInSet packs a set as subset into a new set.
-func (t Tuplip) packInSet(subSet mapset.Set) (result mapset.Set) {
-	return mapset.NewSetWith(subSet)
-}
-
-// mergeSets merges the second given set into the first one.
-func (t Tuplip) mergeSets(left mapset.Set, right mapset.Set) (result mapset.Set) {
-	return left.Union(right)
-}
-
-// power build a power of the given set.
-func (t Tuplip) power(inputSet mapset.Set) mapset.Set {
-	return inputSet.PowerSet()
-}
-
-// failOnEmpty returns an error if the given power set is empty (i.e, has cardinality < 2).
-func (t Tuplip) failOnEmpty(inputSet mapset.Set) (mapset.Set, error) {
-	if inputSet.Cardinality() <= 1 {
-		return nil, errors.New("no input tags could be detected")
-	}
-	return inputSet, nil
 }
 
 // join joins all subtags (i.e., elements of the given set) to all possible representations by building a cartesian

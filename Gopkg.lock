@@ -26,6 +26,26 @@
   version = "v1.7.1"
 
 [[projects]]
+  name = "github.com/docker/distribution"
+  packages = [
+    ".",
+    "digestset",
+    "manifest",
+    "manifest/manifestlist",
+    "manifest/schema1",
+    "manifest/schema2",
+    "reference"
+  ]
+  revision = "40b7b5830a2337bb07627617740c0e39eb92800c"
+  version = "v2.7.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/docker/libtrust"
+  packages = ["."]
+  revision = "aabc10ec26b754e797f9028f4589c5b7bd90dc20"
+
+[[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
   revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
@@ -36,6 +56,12 @@
   name = "github.com/go-faces/logger"
   packages = ["."]
   revision = "c221c11516236e1a31ad2c85eb751ae9a6699b32"
+
+[[projects]]
+  name = "github.com/go-ozzo/ozzo-validation"
+  packages = ["."]
+  revision = "106681dbb37bfa3e7683c4c8129cb7f5925ea3e9"
+  version = "v3.5.0"
 
 [[projects]]
   name = "github.com/gofunky/automi"
@@ -52,8 +78,8 @@
     "stream",
     "util"
   ]
-  revision = "7820dd7b95c19d275b3947657fc17fe14432185f"
-  version = "0.3.0"
+  revision = "af9d4ec3512afb6a9b499ef363d75953a5d3d55c"
+  version = "0.3.2"
 
 [[projects]]
   name = "github.com/hashicorp/errwrap"
@@ -66,6 +92,12 @@
   packages = ["."]
   revision = "886a7fbe3eb1c874d46f623bfa70af45f425b3d1"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -86,6 +118,27 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/nokia/docker-registry-client"
+  packages = ["registry"]
+  revision = "bf401ccb7530925d4c1bda64849a593c2caba565"
+
+[[projects]]
+  name = "github.com/opencontainers/go-digest"
+  packages = ["."]
+  revision = "279bed98673dd5bef374d3b6e4b09e2af76183bf"
+  version = "v1.0.0-rc1"
+
+[[projects]]
+  name = "github.com/opencontainers/image-spec"
+  packages = [
+    "specs-go",
+    "specs-go/v1"
+  ]
+  revision = "d60099175f88c47cd379c4738d158884749ed235"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/posener/complete"
   packages = [
     ".",
@@ -97,14 +150,29 @@
   version = "v1.2.1"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
+  version = "v1.3.0"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "ff983b9c42bc9fbf91556e191cc8efb585c16908"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
-  revision = "b4a75ba826a64a70990f11a225237acd6ef35c9f"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "badf5585203e739f88c2c6cd34188a6f54b5d619"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ff8a98fe315774395f4a2832218c1481b2db6948fcb9a7dfa4e91af5fcefda07"
+  inputs-digest = "e62a2206b4af85c745c2a52f888a577cb5ee306d5d87a5fae1a3369ebb479246"
   solver-name = "gps-cdcl"
   solver-version = 1
