@@ -5,6 +5,7 @@ WORKDIR $GOPATH/src/github.com/gofunky/tuplip/
 
 ENV GOOS=linux
 ENV GOARCH=amd64
+ENV GO111MODULE=on
 
 ARG VERSION=latest
 
