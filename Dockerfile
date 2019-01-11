@@ -10,7 +10,7 @@ ENV GO111MODULE=on
 ARG VERSION=latest
 
 RUN go get -v github.com/ahmetb/govvv
-RUN go test -v -mod=vendor ./...
+RUN go test -v ./...
 RUN govvv build -v -o /go/bin/tuplip ./cmd/tuplip
 
 FROM gofunky/git:2.18.1
