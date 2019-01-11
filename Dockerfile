@@ -8,7 +8,6 @@ ENV GOARCH=amd64
 
 ARG VERSION=latest
 
-RUN dep ensure -v -vendor-only
 RUN go get github.com/ahmetb/govvv
 RUN govvv build -v -o /go/bin/tuplip ./cmd/tuplip
 
