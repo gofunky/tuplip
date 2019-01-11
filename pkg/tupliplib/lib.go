@@ -32,46 +32,43 @@ const VectorSeparator = " "
 
 // Tuplip contains the parameters for the Docker tag generation.
 type Tuplip struct {
-	// ExcludeMajor excludes the major versions from the result set.
-	ExcludeMajor bool
-	// ExcludeMinor excludes the minor versions from the result set.
-	ExcludeMinor bool
-	// ExcludeBase excludes the base alias without version suffix from the result set.
-	ExcludeBase bool
+	// ExcludeMajor excludes the major versions from the considered version variants.
+	ExcludeMajor bool `help:"excludes the major versions from the considered version variants"`
+	// ExcludeMinor excludes the minor versions from the considered version variants.
+	ExcludeMinor bool `help:"excludes the minor versions from the considered version variants"`
+	// ExcludeBase excludes the base alias without version suffix from the considered version variants.
+	ExcludeBase bool `help:"excludes the base alias without version suffix from the considered version variants"`
 	// AddLatest adds an additional 'latest' tag to the result set.
-	AddLatest bool
-	// Separator to split the separate tag vector aliases. The default separator is single space.
-	Separator string
-	// Docker repository of the root tag vector in the format `organization/repository`.
-	Repository string
+	AddLatest bool `short:"l" help:"adds an additional 'latest' tag to the result set"`
 }
 
-// tuplipSource is the intermediarily-built Tuplip stream containing only the source parsing steps.
-type tuplipSource struct {
+// TuplipSource is the intermediarily-built Tuplip stream containing only the source parsing steps.
+type TuplipSource struct {
 	tuplip *Tuplip
 	stream *stream.Stream
 }
 
-// check performs post-construction checks.
-func (t *Tuplip) check() {
-	if t.Separator == "" {
-		t.Separator = VectorSeparator
-	}
+// FromReader builds a tuplip source from a io.Reader as scanner.
+// The separator is used to split the tag vectors from the same row. It defaults to an empty space.
+func (t *Tuplip) FromReader(src io.Reader, sep string) *TuplipSource {
+	stm := stream.New(emitters.Scanner(src, nil))
+	stm.FlatMap(t.splitBySeparator(sep))
+	stm.Filter(nonEmpty)
+	return &TuplipSource{t, stm}
 }
 
-// FromReader builds a tuplip source from a io.Reader as scanner.
-func (t *Tuplip) FromReader(src io.Reader) *tuplipSource {
-	t.check()
-	stm := stream.New(emitters.Scanner(src, nil))
-	stm.FlatMap(t.splitBySeparator)
+// FromSlice builds a tuplip source from a slice.
+func (t *Tuplip) FromSlice(src []string) *TuplipSource {
+	stm := stream.New(emitters.Slice(src))
 	stm.Filter(nonEmpty)
-	return &tuplipSource{t, stm}
+	return &TuplipSource{t, stm}
 }
 
 // Build defines a tuplip stream that builds a complete set of Docker tags. The returned stream has no configured sink.
-func (s *tuplipSource) Build() (stream *stream.Stream) {
+// requireSemver enables semantic version checks. Short versions are not allowed then.
+func (s *TuplipSource) Build(requireSemver bool) (stream *stream.Stream) {
 	stream = s.stream
-	stream.Map(s.tuplip.splitVersion)
+	stream.Map(s.tuplip.splitVersion(requireSemver))
 	stream.Map(packInSet)
 	stream.Reduce(mapset.NewSet(), mergeSets)
 	stream.Map(power)
@@ -83,16 +80,19 @@ func (s *tuplipSource) Build() (stream *stream.Stream) {
 }
 
 // getTags fetches the set of tags for the given Docker repository.
-func (t *Tuplip) getTags() (tagMap map[string]mapset.Set, err error) {
-	if err = validation.Validate(t.Repository,
+func (t *Tuplip) getTags(repository string) (tagMap map[string]mapset.Set, err error) {
+	if err = validation.Validate(repository,
 		validation.Required,
 	); err != nil {
 		return nil, err
 	}
-	if hub, err := registry.New(DockerRegistry, "", ""); err != nil {
+	if hub, err := registry.NewCustom(DockerRegistry, registry.Options{
+		Logf: registry.Quiet,
+	}); err != nil {
 		return nil, err
 	} else {
-		if tags, err := hub.Tags(t.Repository); err != nil {
+		hub.Logf = registry.Quiet
+		if tags, err := hub.Tags(repository); err != nil {
 			return nil, err
 		} else {
 			if len(tags) == 0 {
@@ -112,14 +112,14 @@ func (t *Tuplip) getTags() (tagMap map[string]mapset.Set, err error) {
 	}
 }
 
-// Find defines a tuplip stream that finds the matching Docker tag in the Docker Hub.
+// Find defines a tuplip stream that finds an appropriate matching Docker tag in the given Docker Hub repository.
 // The returned stream has no configured sink.
-func (s *tuplipSource) Find() (stream *stream.Stream, err error) {
+func (s *TuplipSource) Find(repository string) (stream *stream.Stream, err error) {
 	stream = s.stream
-	if tagMap, err := s.tuplip.getTags(); err != nil {
+	if tagMap, err := s.tuplip.getTags(repository); err != nil {
 		return nil, err
 	} else {
-		stream.Map(s.tuplip.splitVersion)
+		stream.Map(s.tuplip.splitVersion(false))
 		stream.Reduce(tagMap, removeCommon)
 		stream.Map(keyForSmallest)
 	}

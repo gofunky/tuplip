@@ -11,7 +11,9 @@ import (
 
 func TestTuplipStream_BuildFromReader(t *testing.T) {
 	type args struct {
-		input []string
+		input         []string
+		sep           string
+		requireSemver bool
 	}
 	tests := []struct {
 		name    string
@@ -22,86 +24,95 @@ func TestTuplipStream_BuildFromReader(t *testing.T) {
 	}{
 		{
 			name:    "Empty Slice",
-			args:    args{[]string{}},
+			args:    args{input: []string{}},
 			wantErr: true,
 		},
 		{
 			name:    "Empty Element",
-			args:    args{[]string{""}},
+			args:    args{input: []string{""}},
 			wantErr: true,
 		},
 		{
 			name: "Simple Unary Tag",
-			args: args{[]string{"alias"}},
+			args: args{input: []string{"alias"}},
 			want: []string{"alias"},
 		},
 		{
 			name: "Simple Binary Tag",
-			args: args{[]string{"alias", "foo"}},
+			args: args{input: []string{"alias", "foo"}},
 			want: []string{"alias", "foo", "alias-foo"},
 		},
 		{
 			name: "Simple Tertiary Tag",
-			args: args{[]string{"alias", "foo", "boo"}},
+			args: args{input: []string{"alias", "foo", "boo"}},
 			want: []string{"alias", "foo", "alias-foo", "boo", "alias-boo", "boo-foo", "alias-boo-foo"},
 		},
 		{
 			name: "Simple Binary Tag With Short Version",
-			args: args{[]string{"alias", "foo:2.0"}},
+			args: args{input: []string{"alias", "foo:2.0"}},
 			want: []string{"alias", "foo", "foo2", "foo2.0", "alias-foo", "alias-foo2", "alias-foo2.0"},
 		},
 		{
 			name: "Simple Unary Tag With Long Version",
-			args: args{[]string{"foo:2.0.0"}},
+			args: args{input: []string{"foo:2.0.0"}},
 			want: []string{"foo", "foo2", "foo2.0", "foo2.0.0"},
 		},
 		{
 			name: "Wildcard Binary Tag With Long Version",
-			args: args{[]string{"_:2.0.0", "alias"}},
+			args: args{input: []string{"_:2.0.0", "alias"}},
 			want: []string{"alias", "2", "2.0", "2.0.0", "2-alias", "2.0-alias", "2.0.0-alias"},
 		},
 		{
 			name: "Wildcard Binary Tag With Long Version And Major Exclusion",
 			t:    Tuplip{ExcludeMajor: true},
-			args: args{[]string{"_:2.0.0", "alias"}},
+			args: args{input: []string{"_:2.0.0", "alias"}},
 			want: []string{"alias", "2.0", "2.0.0", "2.0-alias", "2.0.0-alias"},
 		},
 		{
 			name: "Wildcard Binary Tag With Long Version And Minor Exclusion",
 			t:    Tuplip{ExcludeMinor: true},
-			args: args{[]string{"_:2.0.0", "alias"}},
+			args: args{input: []string{"_:2.0.0", "alias"}},
 			want: []string{"alias", "2", "2.0.0", "2-alias", "2.0.0-alias"},
 		},
 		{
 			name: "Simple Unary Tag With Long Version And Base Exclusion",
 			t:    Tuplip{ExcludeBase: true},
-			args: args{[]string{"foo:2.0.0"}},
+			args: args{input: []string{"foo:2.0.0"}},
 			want: []string{"foo2", "foo2.0", "foo2.0.0"},
 		},
 		{
 			name: "Wildcard Unary Tag With Long Version And Base Exclusion",
 			t:    Tuplip{ExcludeBase: true},
-			args: args{[]string{"_:2.0.0"}},
+			args: args{input: []string{"_:2.0.0"}},
 			want: []string{"2", "2.0", "2.0.0"},
 		},
 		{
 			name: "Wildcard Unary Tag With Long Version And Latest Addition",
 			t:    Tuplip{AddLatest: true},
-			args: args{[]string{"_:2.0.0", "foo"}},
+			args: args{input: []string{"_:2.0.0", "foo"}},
 			want: []string{"latest", "foo", "2", "2.0", "2.0.0", "2-foo", "2.0-foo", "2.0.0-foo"},
 		},
 		{
 			name: "Wildcard Unary Tag With Long Version And a Different Separator",
-			t:    Tuplip{Separator: ";"},
-			args: args{[]string{" _:2.0.0; foo "}},
+			args: args{input: []string{" _:2.0.0; foo "}, sep: ";"},
 			want: []string{"foo", "2", "2.0", "2.0.0", "2-foo", "2.0-foo", "2.0.0-foo"},
+		},
+		{
+			name: "Unary Patch Version Tag Without Base",
+			args: args{input: []string{" _:2"}},
+			want: []string{"2"},
+		},
+		{
+			name:    "Invalid Semantic Version With Semver Required",
+			args:    args{input: []string{" _:2.0 foo"}, requireSemver: true},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			src := strings.NewReader(strings.Join(tt.args.input, " "))
-			tuplipSrc := tt.t.FromReader(src)
-			tStream := tuplipSrc.Build()
+			tuplipSrc := tt.t.FromReader(src, tt.args.sep)
+			tStream := tuplipSrc.Build(tt.args.requireSemver)
 			collector := collectors.Slice()
 			tStream.Into(collector)
 			select {
@@ -128,7 +139,8 @@ func TestTuplipStream_BuildFromReader(t *testing.T) {
 
 func TestTuplipStream_FindFromReader(t *testing.T) {
 	type args struct {
-		input []string
+		input      []string
+		repository string
 	}
 	tests := []struct {
 		name    string
@@ -139,33 +151,30 @@ func TestTuplipStream_FindFromReader(t *testing.T) {
 	}{
 		{
 			name:    "Empty Repository",
-			args:    args{[]string{""}},
+			args:    args{[]string{""}, ""},
 			wantErr: true,
 		},
 		{
 			name:    "Input No Match",
-			t:       Tuplip{Repository: "gofunky/git"},
-			args:    args{[]string{"unknown"}},
+			args:    args{[]string{"unknown"}, "gofunky/git"},
 			wantErr: true,
 		},
 		{
 			name: "Simple Unary Tag",
-			t:    Tuplip{Repository: "gofunky/git"},
-			args: args{[]string{"envload"}},
+			args: args{[]string{"envload"}, "gofunky/git"},
 			want: "envload",
 		},
 		{
 			name: "Simple Binary Tag",
-			t:    Tuplip{Repository: "gofunky/git"},
-			args: args{[]string{"envload", "alpine:3.8"}},
+			args: args{[]string{"envload", "alpine:3.8"}, "gofunky/git"},
 			want: "alpine3.8-envload",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			src := strings.NewReader(strings.Join(tt.args.input, " "))
-			tuplipSrc := tt.t.FromReader(src)
-			tStream, srcErr := tuplipSrc.Find()
+			tuplipSrc := tt.t.FromReader(src, " ")
+			tStream, srcErr := tuplipSrc.Find(tt.args.repository)
 			collector := collectors.Slice()
 			var gotErr error
 			if tStream != nil {
@@ -238,10 +247,8 @@ func TestTuplip_getTags(t *testing.T) {
 				ExcludeMinor: tt.fields.ExcludeMinor,
 				ExcludeBase:  tt.fields.ExcludeBase,
 				AddLatest:    tt.fields.AddLatest,
-				Separator:    tt.fields.Separator,
-				Repository:   tt.fields.Repository,
 			}
-			tagSet, err := tu.getTags()
+			tagSet, err := tu.getTags(tt.fields.Repository)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tuplip.getTags() error = %v, wantErr %v", err, tt.wantErr)
 				return

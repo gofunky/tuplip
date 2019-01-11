@@ -9,7 +9,8 @@ ENV GOARCH=amd64
 ARG VERSION=latest
 
 RUN dep ensure -v -vendor-only
-RUN go build -v -o /go/bin/tuplip -ldflags "-X main.GitVersion=$VERSION" ./cmd/tuplip
+RUN go get github.com/ahmetb/govvv
+RUN govvv build -v -o /go/bin/tuplip ./cmd/tuplip
 
 FROM gofunky/git:2.18.1
 LABEL maintainer="mat@fax.fyi"

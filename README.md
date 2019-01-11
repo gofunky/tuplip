@@ -10,7 +10,7 @@
 [![Microbadger Layers](https://images.microbadger.com/badges/image/gofunky/tuplip.svg)](https://microbadger.com/images/gofunky/tuplip "Docker Layers")
 [![Docker Pulls](https://img.shields.io/docker/pulls/gofunky/tuplip.svg)](https://hub.docker.com/r/gofunky/tuplip)
 
-generate a complete set of Docker tags that depict all tuples of dependency versions
+tuplip generates and checks Docker tags in a transparent and convention-forming way
 
 ## Installation
 

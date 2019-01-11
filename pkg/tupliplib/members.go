@@ -33,79 +33,100 @@ func (t Tuplip) buildTag(withBase bool, alias string, versionDigits ...uint64) (
 }
 
 // buildVersionSet parses all possible shortened version representations from a semantic version object.
-func (t Tuplip) buildVersionSet(withBase bool, alias string, isShort bool, version semver.Version) (result mapset.Set,
+func (t Tuplip) buildVersionSet(withBase bool, alias string, versionArity int, version semver.Version) (result mapset.Set,
 	err error) {
 
 	result = mapset.NewSet()
 	if withBase && !t.ExcludeBase {
 		result.Add(alias)
 	}
-	if isShort {
+	if versionArity == 1 {
 		if !t.ExcludeMajor {
-			newTag, err := t.buildTag(withBase, alias, version.Minor)
-			if err != nil {
+			if newTag, err := t.buildTag(withBase, alias, version.Patch); err != nil {
 				return nil, err
+			} else {
+				result.Add(newTag)
 			}
-			result.Add(newTag)
 		}
-		newTag, err := t.buildTag(withBase, alias, version.Minor, version.Patch)
-		if err != nil {
-			return nil, err
-		}
-		result.Add(newTag)
-	} else {
+	} else if versionArity == 2 {
 		if !t.ExcludeMajor {
-			newTag, err := t.buildTag(withBase, alias, version.Major)
-			if err != nil {
+			if newTag, err := t.buildTag(withBase, alias, version.Minor); err != nil {
 				return nil, err
+			} else {
+				result.Add(newTag)
 			}
-			result.Add(newTag)
 		}
 		if !t.ExcludeMinor {
-			newTag, err := t.buildTag(withBase, alias, version.Major, version.Minor)
-			if err != nil {
+			if newTag, err := t.buildTag(withBase, alias, version.Minor, version.Patch); err != nil {
 				return nil, err
+			} else {
+				result.Add(newTag)
 			}
+		}
+	} else {
+		if !t.ExcludeMajor {
+			if newTag, err := t.buildTag(withBase, alias, version.Major); err != nil {
+				return nil, err
+			} else {
+				result.Add(newTag)
+			}
+		}
+		if !t.ExcludeMinor {
+			if newTag, err := t.buildTag(withBase, alias, version.Major, version.Minor); err != nil {
+				return nil, err
+			} else {
+				result.Add(newTag)
+			}
+		}
+		if newTag, err := t.buildTag(withBase, alias, version.Major, version.Minor, version.Patch); err != nil {
+			return nil, err
+		} else {
 			result.Add(newTag)
 		}
-		newTag, err := t.buildTag(withBase, alias, version.Major, version.Minor, version.Patch)
-		if err != nil {
-			return nil, err
-		}
-		result.Add(newTag)
 	}
 	return result, nil
 }
 
 // splitVersion takes a parsed semantic version string, builds a semantic version object and generates all possible
 // shortened version strings from it.
-func (t Tuplip) splitVersion(inputTag string) (result mapset.Set, err error) {
-	if strings.Contains(inputTag, VersionSeparator) {
-		dependency := strings.SplitN(inputTag, VersionSeparator, 2)
-		dependencyAlias := dependency[0]
-		var dependencyVersionText = dependency[1]
-		versionIsShort := strings.Count(dependencyVersionText, VersionDot) == 1
-		if versionIsShort {
-			dependencyVersionText = "0." + dependencyVersionText
+// requireSemver enables semantic version checks. Short versions are not allowed then.
+func (t Tuplip) splitVersion(requireSemver bool) func(inputTag string) (result mapset.Set, err error) {
+	return func(inputTag string) (result mapset.Set, err error) {
+		if strings.Contains(inputTag, VersionSeparator) {
+			dependency := strings.SplitN(inputTag, VersionSeparator, 2)
+			dependencyAlias := dependency[0]
+			var dependencyVersionText = dependency[1]
+			var versionArity = 3
+			if !requireSemver {
+				versionArity = strings.Count(dependencyVersionText, VersionDot) + 1
+				for i := 3; i > versionArity; i-- {
+					dependencyVersionText = "0." + dependencyVersionText
+				}
+			}
+			dependencyVersion, err := semver.Make(dependencyVersionText)
+			if err != nil {
+				return nil, err
+			}
+			withBase := dependencyAlias != WildcardDependency
+			return t.buildVersionSet(withBase, dependencyAlias, versionArity, dependencyVersion)
+		} else {
+			return mapset.NewSetWith(inputTag), nil
 		}
-		dependencyVersion, err := semver.Make(dependencyVersionText)
-		if err != nil {
-			return nil, err
-		}
-		withBase := dependencyAlias != WildcardDependency
-		return t.buildVersionSet(withBase, dependencyAlias, versionIsShort, dependencyVersion)
-	} else {
-		return mapset.NewSetWith(inputTag), nil
 	}
 }
 
-// splitBySeparator separates the input string by the chosen character and trims superfluous spaces.
-func (t Tuplip) splitBySeparator(input string) (result []string) {
-	result = strings.Split(input, t.Separator)
-	for i, el := range result {
-		result[i] = strings.TrimSpace(el)
+// splitBySeparator generates a function separates the input string by the given character and trims superfluous spaces.
+func (t Tuplip) splitBySeparator(sep string) func(input string) []string {
+	if sep == "" {
+		sep = VectorSeparator
 	}
-	return
+	return func(input string) (result []string) {
+		result = strings.Split(input, sep)
+		for i, el := range result {
+			result[i] = strings.TrimSpace(el)
+		}
+		return
+	}
 }
 
 // join joins all subtags (i.e., elements of the given set) to all possible representations by building a cartesian

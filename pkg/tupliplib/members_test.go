@@ -88,10 +88,10 @@ func TestTuplip_buildTag(t *testing.T) {
 
 func TestTuplip_parseVersions(t *testing.T) {
 	type args struct {
-		withBase bool
-		alias    string
-		isShort  bool
-		version  semver.Version
+		withBase     bool
+		alias        string
+		versionArity int
+		version      semver.Version
 	}
 	tests := []struct {
 		name       string
@@ -101,17 +101,17 @@ func TestTuplip_parseVersions(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			name: "Short With Base",
+			name: "Minor With Base",
 			args: args{
-				withBase: true,
-				isShort:  true,
-				alias:    "alias",
-				version:  semver.Version{Minor: 1},
+				withBase:     true,
+				versionArity: 2,
+				alias:        "alias",
+				version:      semver.Version{Minor: 1},
 			},
 			wantResult: []string{"alias", "alias1", "alias1.0"},
 		},
 		{
-			name: "Long With Base",
+			name: "Major With Base",
 			args: args{
 				withBase: true,
 				alias:    "alias",
@@ -120,26 +120,35 @@ func TestTuplip_parseVersions(t *testing.T) {
 			wantResult: []string{"alias", "alias1", "alias1.0", "alias1.0.0"},
 		},
 		{
-			name: "Short Without Base",
+			name: "Minor Without Base",
 			args: args{
-				withBase: false,
-				isShort:  true,
-				version:  semver.Version{Minor: 1},
+				withBase:     false,
+				versionArity: 2,
+				version:      semver.Version{Minor: 1},
 			},
 			wantResult: []string{"1", "1.0"},
 		},
 		{
-			name: "Long Without Base",
+			name: "Major Without Base",
 			args: args{
 				withBase: false,
 				version:  semver.Version{Major: 1},
 			},
 			wantResult: []string{"1", "1.0", "1.0.0"},
 		},
+		{
+			name: "Patch Without Base",
+			args: args{
+				withBase:     false,
+				versionArity: 1,
+				version:      semver.Version{Patch: 1},
+			},
+			wantResult: []string{"1"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotResult, err := tt.t.buildVersionSet(tt.args.withBase, tt.args.alias, tt.args.isShort, tt.args.version)
+			gotResult, err := tt.t.buildVersionSet(tt.args.withBase, tt.args.alias, tt.args.versionArity, tt.args.version)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tuplip.buildVersionSet() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -157,7 +166,8 @@ func TestTuplip_parseVersions(t *testing.T) {
 
 func TestTuplip_splitVersion(t *testing.T) {
 	type args struct {
-		inputTag string
+		inputTag      string
+		requireSemver bool
 	}
 	tests := []struct {
 		name       string
@@ -167,32 +177,47 @@ func TestTuplip_splitVersion(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			name: "Short With Base",
+			name: "Minor With Base",
 			args: args{
 				inputTag: "alias:1.0",
 			},
 			wantResult: []string{"alias", "alias1", "alias1.0"},
 		},
 		{
-			name: "Long With Base",
+			name: "Major With Base",
 			args: args{
 				inputTag: "alias:1.0.0",
 			},
 			wantResult: []string{"alias", "alias1", "alias1.0", "alias1.0.0"},
 		},
 		{
-			name: "Short Without Base",
+			name: "Minor Without Base",
 			args: args{
 				inputTag: "_:1.0",
 			},
 			wantResult: []string{"1", "1.0"},
 		},
 		{
-			name: "Long Without Base",
+			name: "Major Without Base",
 			args: args{
 				inputTag: "_:1.0.0",
 			},
 			wantResult: []string{"1", "1.0", "1.0.0"},
+		},
+		{
+			name: "Patch Version",
+			args: args{
+				inputTag: "_:1",
+			},
+			wantResult: []string{"1"},
+		},
+		{
+			name: "Require Semver",
+			args: args{
+				inputTag:      "_:1.0",
+				requireSemver: true,
+			},
+			wantErr: true,
 		},
 		{
 			name: "Invalid Version",
@@ -204,7 +229,7 @@ func TestTuplip_splitVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotResult, err := tt.t.splitVersion(tt.args.inputTag)
+			gotResult, err := tt.t.splitVersion(tt.args.requireSemver)(tt.args.inputTag)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tuplip.splitVersion() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -225,6 +250,7 @@ func TestTuplip_splitVersion(t *testing.T) {
 func TestTuplip_splitBySeparator(t *testing.T) {
 	type args struct {
 		input string
+		sep   string
 	}
 	tests := []struct {
 		name       string
@@ -234,30 +260,28 @@ func TestTuplip_splitBySeparator(t *testing.T) {
 	}{
 		{
 			name:       "Empty Split",
-			args:       args{""},
+			args:       args{},
 			wantResult: []string{""},
 		},
 		{
 			name:       "Unary Split",
-			args:       args{"foo"},
+			args:       args{input: "foo"},
 			wantResult: []string{"foo"},
 		},
 		{
 			name:       "Split Tuple",
-			args:       args{"foo boo hoo"},
+			args:       args{input: "foo boo hoo"},
 			wantResult: []string{"foo", "boo", "hoo"},
 		},
 		{
 			name:       "Split Tuple With Different Separator",
-			t:          Tuplip{Separator: ","},
-			args:       args{"foo, boo,hoo"},
+			args:       args{input: "foo, boo,hoo", sep: ","},
 			wantResult: []string{"foo", "boo", "hoo"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.t.check()
-			if gotResult := tt.t.splitBySeparator(tt.args.input); !reflect.DeepEqual(gotResult, tt.wantResult) {
+			if gotResult := tt.t.splitBySeparator(tt.args.sep)(tt.args.input); !reflect.DeepEqual(gotResult, tt.wantResult) {
 				t.Errorf("Tuplip.splitBySeparator() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})

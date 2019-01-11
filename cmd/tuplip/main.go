@@ -1,29 +1,33 @@
 package main
 
 import (
-	"github.com/mitchellh/cli"
-	"log"
+	"github.com/alecthomas/kong"
 	"os"
 )
 
-// GitVersion is to be replaced by the build version during build time.
-var GitVersion = "dev"
+// cli references the cli command objects.
+var cli struct {
+	Version versionCmd `cmd help:"display the app version"`
+	Help    helpCmd    `cmd help:"show help for a command"`
+	Build   buildCmd   `cmd help:"build all possible Docker tags from the given tag vectors"`
+	Find    findCmd    `cmd help:"find the most appropriate Docker tag in the given repository"`
+}
 
 // main builds a command factory and starts it for the binary.
 func main() {
-	c := cli.NewCLI("tuplip", GitVersion)
-	c.Args = os.Args[1:]
-	c.Commands = map[string]cli.CommandFactory{
-		"build": func() (command cli.Command, e error) {
-			return new(BuildCommand), nil
+	ctx := kong.Parse(&cli,
+		kong.Writers(os.Stderr, os.Stderr),
+		kong.Name("tuplip"),
+		kong.Description("tuplip is a convention-forming Docker tag generator and checker."),
+		kong.UsageOnError(),
+		kong.ConfigureHelp(kong.HelpOptions{
+			Summary: true,
+			Compact: true,
+		}),
+		kong.Vars{
+			"version": Version,
 		},
-	}
-
-	exitStatus, err := c.Run()
-	if err != nil {
-		log.Println(err)
-	}
-
-	os.Exit(exitStatus)
-
+	)
+	err := ctx.Run()
+	ctx.FatalIfErrorf(err)
 }
