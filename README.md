@@ -206,7 +206,7 @@ The above Dockerfile shows an example. It could be a separate file just for vers
 Alternatively, one may also use an existing Dockerfile for a target image and build
 the target tags from it. 
 
-#### The LAst Instruction
+#### The Last Instruction
 
 The last `FROM` instruction will always be interpreted as the root tag vector.
 From that, the target repository will be derived (e.g, the one to check using the `find` command).
