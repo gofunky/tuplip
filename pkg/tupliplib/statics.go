@@ -135,7 +135,7 @@ func removeCommon(seed map[string]mapset.Set, next mapset.Set) (result map[strin
 		}
 	}
 	if !found {
-		return nil, fmt.Errorf("the given tag vector '%v' was not found in any remote tags", next)
+		return nil, fmt.Errorf("the given tag vector '%v' was not found in any remote tags", next.ToSlice())
 	}
 	return seed, nil
 }
