@@ -2,8 +2,8 @@ package tupliplib
 
 import (
 	"fmt"
-	"github.com/blang/semver"
 	"github.com/deckarep/golang-set"
+	"github.com/gofunky/semver"
 	"sort"
 	"strings"
 )
@@ -40,37 +40,14 @@ func (t Tuplip) buildVersionSet(withBase bool, alias string, versionArity int, v
 	if withBase && !t.ExcludeBase {
 		result.Add(alias)
 	}
-	if versionArity == 1 {
-		if !t.ExcludeMajor {
-			if newTag, err := t.buildTag(withBase, alias, version.Patch); err != nil {
-				return nil, err
-			} else {
-				result.Add(newTag)
-			}
+	if !t.ExcludeMajor {
+		if newTag, err := t.buildTag(withBase, alias, version.Major); err != nil {
+			return nil, err
+		} else {
+			result.Add(newTag)
 		}
-	} else if versionArity == 2 {
-		if !t.ExcludeMajor {
-			if newTag, err := t.buildTag(withBase, alias, version.Minor); err != nil {
-				return nil, err
-			} else {
-				result.Add(newTag)
-			}
-		}
-		if !t.ExcludeMinor {
-			if newTag, err := t.buildTag(withBase, alias, version.Minor, version.Patch); err != nil {
-				return nil, err
-			} else {
-				result.Add(newTag)
-			}
-		}
-	} else {
-		if !t.ExcludeMajor {
-			if newTag, err := t.buildTag(withBase, alias, version.Major); err != nil {
-				return nil, err
-			} else {
-				result.Add(newTag)
-			}
-		}
+	}
+	if versionArity >= 2 {
 		if !t.ExcludeMinor {
 			if newTag, err := t.buildTag(withBase, alias, version.Major, version.Minor); err != nil {
 				return nil, err
@@ -78,6 +55,8 @@ func (t Tuplip) buildVersionSet(withBase bool, alias string, versionArity int, v
 				result.Add(newTag)
 			}
 		}
+	}
+	if versionArity >= 3 {
 		if newTag, err := t.buildTag(withBase, alias, version.Major, version.Minor, version.Patch); err != nil {
 			return nil, err
 		} else {
@@ -96,16 +75,15 @@ func (t Tuplip) splitVersion(requireSemver bool) func(inputTag string) (result m
 			dependency := strings.SplitN(inputTag, VersionSeparator, 2)
 			dependencyAlias := dependency[0]
 			var dependencyVersionText = dependency[1]
-			var versionArity = 3
-			if !requireSemver {
-				versionArity = strings.Count(dependencyVersionText, VersionDot) + 1
-				for i := 3; i > versionArity; i-- {
-					dependencyVersionText = "0." + dependencyVersionText
-				}
+			versionArity := strings.Count(dependencyVersionText, VersionDot) + 1
+			var dependencyVersion semver.Version
+			if requireSemver {
+				dependencyVersion, err = semver.Parse(dependencyVersionText)
+			} else {
+				dependencyVersion, err = semver.ParseTolerant(dependencyVersionText)
 			}
-			dependencyVersion, err := semver.Make(dependencyVersionText)
 			if err != nil {
-				return nil, err
+				return
 			}
 			withBase := dependencyAlias != WildcardDependency
 			return t.buildVersionSet(withBase, dependencyAlias, versionArity, dependencyVersion)

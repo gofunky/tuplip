@@ -17,11 +17,14 @@ type findCmd struct {
 			paramOption `embed`
 		} `cmd help:"determine the source of the tag vectors"`
 		// Repository is the Docker Hub repository of the root tag vector in the format `organization/repository`.
-		Repository string `arg help:"the Docker Hub repository of the root tag vector in the format 'organization/repository'"`
+		Repository string `arg env:"DOCKER_REPOSITORY" help:"the Docker Hub repository of the root tag vector in the format 'organization/repository'"`
 	} `arg`
 }
 
 // run implements main.rootCmd.run by executing the find.
 func (s findCmd) run(src *tupliplib.TuplipSource) (*stream.Stream, error) {
-	return src.Find(s.Repository.Repository)
+	if r := s.Repository.Repository; r != "" {
+		src.Repository = r
+	}
+	return src.Find()
 }

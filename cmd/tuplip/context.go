@@ -23,26 +23,11 @@ type tuplipContext struct {
 	tupliplib.Tuplip `embed`
 }
 
-// fileOption defines a command branch that contains only the file command.
-type fileOption struct {
-	// File to read the tag vectors from a Dockerfile.
-	File fileCmd `cmd help:"read the tag vectors from a Dockerfile"`
-}
-
 // sourceOption defines a command branch to determine the source of the tag vectors.
 type sourceOption struct {
 	stdinOption `embed`
 	fileOption  `embed`
 	paramOption `embed`
-}
-
-// fileCmd defines a command to read tag vectors from a Dockerfile.
-type fileCmd struct {
-	// File opens a positional argument in the file command.
-	File struct {
-		// File is the Dockerfile that contains the vectors as FROM instructions.
-		File string `arg type:"existingfile" help:"the Dockerfile containing the vectors as FROM instructions"`
-	} `arg`
 }
 
 // toRoot determines the root command and passes the given tuplip source to it.

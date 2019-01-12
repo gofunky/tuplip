@@ -2,6 +2,7 @@ package tupliplib
 
 import (
 	"github.com/deckarep/golang-set"
+	"io/ioutil"
 	"strings"
 	"testing"
 	"time"
@@ -139,42 +140,45 @@ func TestTuplipStream_BuildFromReader(t *testing.T) {
 
 func TestTuplipStream_FindFromReader(t *testing.T) {
 	type args struct {
-		input      []string
-		repository string
+		input []string
 	}
 	tests := []struct {
 		name    string
-		t       Tuplip
+		s       TuplipSource
 		args    args
 		want    string
 		wantErr bool
 	}{
 		{
 			name:    "Empty Repository",
-			args:    args{[]string{""}, ""},
+			args:    args{[]string{""}},
 			wantErr: true,
 		},
 		{
 			name:    "Input No Match",
-			args:    args{[]string{"unknown"}, "gofunky/git"},
+			s:       TuplipSource{Repository: "gofunky/git"},
+			args:    args{[]string{"unknown"}},
 			wantErr: true,
 		},
 		{
 			name: "Simple Unary Tag",
-			args: args{[]string{"envload"}, "gofunky/git"},
+			s:    TuplipSource{Repository: "gofunky/git"},
+			args: args{[]string{"envload"}},
 			want: "envload",
 		},
 		{
 			name: "Simple Binary Tag",
-			args: args{[]string{"envload", "alpine:3.8"}, "gofunky/git"},
+			s:    TuplipSource{Repository: "gofunky/git"},
+			args: args{[]string{"envload", "alpine:3.8"}},
 			want: "alpine3.8-envload",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			src := strings.NewReader(strings.Join(tt.args.input, " "))
-			tuplipSrc := tt.t.FromReader(src, " ")
-			tStream, srcErr := tuplipSrc.Find(tt.args.repository)
+			tuplipSrc := new(Tuplip).FromReader(src, " ")
+			tuplipSrc.Repository = tt.s.Repository
+			tStream, srcErr := tuplipSrc.Find()
 			collector := collectors.Slice()
 			var gotErr error
 			if tStream != nil {
@@ -201,14 +205,48 @@ func TestTuplipStream_FindFromReader(t *testing.T) {
 	}
 }
 
+func TestTuplipStream_BuildFromFile(t *testing.T) {
+	t.Run("Test Dockerfile", func(t *testing.T) {
+		expectedFile, err := ioutil.ReadFile("../../test/tags.txt")
+		if err != nil {
+			t.Errorf("test error = %v", err)
+			return
+		}
+		expectedLines := strings.Split(string(expectedFile), "\n")
+		expectedSet := mapset.NewSet()
+		for _, l := range expectedLines {
+			if l != "" {
+				expectedSet.Add(l)
+			}
+		}
+		tuplipSrc, err := new(Tuplip).FromFile("../../test/Dockerfile")
+		if err != nil {
+			t.Errorf("Tuplip.Build() error = %v", err)
+			return
+		}
+		tStream := tuplipSrc.Build(false)
+		collector := collectors.Slice()
+		tStream.Into(collector)
+		select {
+		case gotErr := <-tStream.Open():
+			if gotErr != nil {
+				t.Errorf("Tuplip.Build() error = %v", gotErr)
+				return
+			}
+		case <-time.After(500 * time.Millisecond):
+			t.Fatal("Waited too long ...")
+		}
+		gotOutput := mapset.NewSetFromSlice(collector.Get())
+		if !gotOutput.Equal(expectedSet) {
+			t.Errorf("Tuplip.Build() = %v, want %v, difference %v",
+				gotOutput, expectedSet, gotOutput.Difference(expectedSet))
+		}
+	})
+}
+
 func TestTuplip_getTags(t *testing.T) {
 	type fields struct {
-		ExcludeMajor bool
-		ExcludeMinor bool
-		ExcludeBase  bool
-		AddLatest    bool
-		Separator    string
-		Repository   string
+		Repository string
 	}
 	tests := []struct {
 		name    string
@@ -242,13 +280,10 @@ func TestTuplip_getTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tu := &Tuplip{
-				ExcludeMajor: tt.fields.ExcludeMajor,
-				ExcludeMinor: tt.fields.ExcludeMinor,
-				ExcludeBase:  tt.fields.ExcludeBase,
-				AddLatest:    tt.fields.AddLatest,
+			tu := &TuplipSource{
+				Repository: tt.fields.Repository,
 			}
-			tagSet, err := tu.getTags(tt.fields.Repository)
+			tagSet, err := tu.getTags()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tuplip.getTags() error = %v, wantErr %v", err, tt.wantErr)
 				return

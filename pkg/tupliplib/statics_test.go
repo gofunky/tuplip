@@ -394,3 +394,143 @@ func Test_mostSeparators(t *testing.T) {
 		})
 	}
 }
+
+func Test_markRootInstruction(t *testing.T) {
+	type args struct {
+		lines []string
+	}
+	tests := []struct {
+		name           string
+		args           args
+		wantMarked     []string
+		wantRepository string
+		wantErr        bool
+	}{
+		{
+			name:    "Empty",
+			wantErr: true,
+		},
+		{
+			name:    "Missing FROM",
+			wantErr: true,
+			args:    args{lines: []string{"", "ARG", "NOFROM"}},
+		},
+		{
+			name:           "Simple Unary",
+			args:           args{lines: []string{"FROM gofunky/docker:1.2.3 as goo"}},
+			wantMarked:     []string{"FROM _:1.2.3"},
+			wantRepository: "gofunky/docker",
+		},
+		{
+			name: "Simple Binary",
+			args: args{
+				lines: []string{
+					"FROM scratch as master",
+					"ARG Other",
+					"FROM gofunky/docker:1.2.3 as goo",
+				},
+			},
+			wantMarked: []string{
+				"FROM scratch as master",
+				"ARG Other",
+				"FROM _:1.2.3",
+			},
+			wantRepository: "gofunky/docker",
+		},
+		{
+			name: "Unary Scratch Root",
+			args: args{
+				lines: []string{
+					"FROM scratch as master",
+				},
+			},
+			wantMarked:     []string{""},
+			wantRepository: "scratch",
+		},
+		{
+			name: "Binary Scratch Root",
+			args: args{
+				lines: []string{
+					"ARG Other",
+					"FROM gofunky/docker:1.2.3 as goo",
+					"FROM scratch as master",
+				},
+			},
+			wantMarked: []string{
+				"ARG Other",
+				"FROM gofunky/docker:1.2.3 as goo",
+				"",
+			},
+			wantRepository: "scratch",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotMarked, gotRepository, err := markRootInstruction(tt.args.lines)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("markRootInstruction() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotMarked, tt.wantMarked) {
+				t.Errorf("markRootInstruction() gotMarked = %v, want %v", gotMarked, tt.wantMarked)
+			}
+			if gotRepository != tt.wantRepository {
+				t.Errorf("markRootInstruction() gotRepository = %v, want %v", gotRepository, tt.wantRepository)
+			}
+		})
+	}
+}
+
+func Test_toTagVector(t *testing.T) {
+	type args struct {
+		inst string
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantVector string
+	}{
+		{
+			name:       "Unary Repo",
+			args:       args{"FROM scratch"},
+			wantVector: "scratch",
+		},
+		{
+			name:       "Binary Repo",
+			args:       args{"FROM gofunky/git"},
+			wantVector: "git",
+		},
+		{
+			name:       "Unary Repo With Alias",
+			args:       args{"FROM scratch as goo"},
+			wantVector: "goo",
+		},
+		{
+			name:       "Binary Repo With Alias",
+			args:       args{"FROM gofunky/git as goo"},
+			wantVector: "goo",
+		},
+		{
+			name:       "Binary Repo With Alias And Version",
+			args:       args{"FROM gofunky/git:1.2.3 as goo"},
+			wantVector: "goo:1.2.3",
+		},
+		{
+			name:       "Binary Repo With Version",
+			args:       args{"FROM gofunky/git:1.2.3"},
+			wantVector: "git:1.2.3",
+		},
+		{
+			name:       "Wildcard Repo With Version",
+			args:       args{"FROM _:1.2.3"},
+			wantVector: "_:1.2.3",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotVector := toTagVector(tt.args.inst); gotVector != tt.wantVector {
+				t.Errorf("toTagVector() = %v, want %v", gotVector, tt.wantVector)
+			}
+		})
+	}
+}

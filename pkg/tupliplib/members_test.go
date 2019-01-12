@@ -1,8 +1,8 @@
 package tupliplib
 
 import (
-	"github.com/blang/semver"
 	"github.com/deckarep/golang-set"
+	"github.com/gofunky/semver"
 	"reflect"
 	"testing"
 )
@@ -106,16 +106,17 @@ func TestTuplip_parseVersions(t *testing.T) {
 				withBase:     true,
 				versionArity: 2,
 				alias:        "alias",
-				version:      semver.Version{Minor: 1},
+				version:      semver.Version{Major: 1},
 			},
 			wantResult: []string{"alias", "alias1", "alias1.0"},
 		},
 		{
 			name: "Major With Base",
 			args: args{
-				withBase: true,
-				alias:    "alias",
-				version:  semver.Version{Major: 1},
+				withBase:     true,
+				versionArity: 3,
+				alias:        "alias",
+				version:      semver.Version{Major: 1},
 			},
 			wantResult: []string{"alias", "alias1", "alias1.0", "alias1.0.0"},
 		},
@@ -124,15 +125,16 @@ func TestTuplip_parseVersions(t *testing.T) {
 			args: args{
 				withBase:     false,
 				versionArity: 2,
-				version:      semver.Version{Minor: 1},
+				version:      semver.Version{Major: 1},
 			},
 			wantResult: []string{"1", "1.0"},
 		},
 		{
 			name: "Major Without Base",
 			args: args{
-				withBase: false,
-				version:  semver.Version{Major: 1},
+				withBase:     false,
+				versionArity: 3,
+				version:      semver.Version{Major: 1},
 			},
 			wantResult: []string{"1", "1.0", "1.0.0"},
 		},
@@ -141,7 +143,7 @@ func TestTuplip_parseVersions(t *testing.T) {
 			args: args{
 				withBase:     false,
 				versionArity: 1,
-				version:      semver.Version{Patch: 1},
+				version:      semver.Version{Major: 1},
 			},
 			wantResult: []string{"1"},
 		},
