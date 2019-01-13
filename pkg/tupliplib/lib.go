@@ -1,12 +1,9 @@
 package tupliplib
 
 import (
-	"errors"
 	"github.com/deckarep/golang-set"
-	"github.com/go-ozzo/ozzo-validation"
 	"github.com/gofunky/automi/emitters"
 	"github.com/gofunky/automi/stream"
-	"github.com/nokia/docker-registry-client/registry"
 	"io"
 	"io/ioutil"
 	"strings"
@@ -82,37 +79,25 @@ func (s *TuplipSource) Build(requireSemver bool) (stream *stream.Stream) {
 	return
 }
 
-// getTags fetches the set of tags for the given Docker repository.
-func (s *TuplipSource) getTags() (tagMap map[string]mapset.Set, err error) {
-	if err = validation.Validate(s.Repository,
-		validation.Required,
-	); err != nil {
-		return nil, err
+// Tag extends the *TuplipSource.Build stream by a `docker tag` execution for all generated tags.
+// requireSemver enables semantic version checks. Short versions are not allowed then.
+func (s *TuplipSource) Tag(requireSemver bool, sourceTag string) (stream *stream.Stream, err error) {
+	if err = requireDocker(); err != nil {
+		return
 	}
-	if hub, err := registry.NewCustom(DockerRegistry, registry.Options{
-		Logf: registry.Quiet,
-	}); err != nil {
-		return nil, err
-	} else {
-		hub.Logf = registry.Quiet
-		if tags, err := hub.Tags(s.Repository); err != nil {
-			return nil, err
-		} else {
-			if len(tags) == 0 {
-				return nil, errors.New("no Docker tags could be found on the given remote")
-			}
-			tagMap := make(map[string]mapset.Set)
-			for _, tag := range tags {
-				tagVectors := strings.Split(tag, DockerTagSeparator)
-				vectorSet := mapset.NewSet()
-				for _, v := range tagVectors {
-					vectorSet.Add(v)
-				}
-				tagMap[tag] = vectorSet
-			}
-			return tagMap, nil
-		}
+	stream = s.Build(requireSemver)
+	stream.Map(s.dockerTag(sourceTag))
+	return
+}
+
+// Push extends the *TuplipSource.Tag stream by a `docker push` execution for all generated tags.
+// requireSemver enables semantic version checks. Short versions are not allowed then.
+func (s *TuplipSource) Push(requireSemver bool, sourceTag string) (stream *stream.Stream, err error) {
+	if stream, err = s.Tag(requireSemver, sourceTag); err != nil {
+		return
 	}
+	stream.Map(s.dockerPush)
+	return
 }
 
 // Find defines a tuplip stream that finds an appropriate matching Docker tag in the given Docker Hub repository.

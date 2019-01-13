@@ -1,9 +1,13 @@
 package tupliplib
 
 import (
+	"errors"
 	"fmt"
 	"github.com/deckarep/golang-set"
+	"github.com/go-ozzo/ozzo-validation"
 	"github.com/gofunky/semver"
+	"github.com/nokia/docker-registry-client/registry"
+	"os/exec"
 	"sort"
 	"strings"
 )
@@ -141,4 +145,69 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 		inputSet.Add(mapset.NewSet(mapset.NewSet("latest")))
 	}
 	return inputSet
+}
+
+// getTags fetches the set of tags for the given Docker repository.
+func (s *TuplipSource) getTags() (tagMap map[string]mapset.Set, err error) {
+	if err = validation.Validate(s.Repository,
+		validation.Required,
+	); err != nil {
+		return nil, err
+	}
+	if hub, err := registry.NewCustom(DockerRegistry, registry.Options{
+		Logf: registry.Quiet,
+	}); err != nil {
+		return nil, err
+	} else {
+		if tags, err := hub.Tags(s.Repository); err != nil {
+			return nil, err
+		} else {
+			if len(tags) == 0 {
+				return nil, errors.New("no Docker tags could be found on the given remote")
+			}
+			tagMap := make(map[string]mapset.Set)
+			for _, tag := range tags {
+				tagVectors := strings.Split(tag, DockerTagSeparator)
+				vectorSet := mapset.NewSet()
+				for _, v := range tagVectors {
+					vectorSet.Add(v)
+				}
+				tagMap[tag] = vectorSet
+			}
+			return tagMap, nil
+		}
+	}
+}
+
+// dockerTag tags all inputTags given the sourceTag.
+func (s *TuplipSource) dockerTag(sourceTag string) func(inputTag string) (string, error) {
+	return func(inputTag string) (o string, err error) {
+		var targetTag = inputTag
+		if repo := s.Repository; repo != "" {
+			targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
+		}
+		cmd := exec.Command("docker", "tag", sourceTag, targetTag)
+		if _, err := cmd.CombinedOutput(); err != nil {
+			return "", err
+		}
+		return inputTag, nil
+	}
+}
+
+// dockerPush pushes all inputTags to the Docker Hub and prepends a success or fail message to the respective tags.
+func (s *TuplipSource) dockerPush(inputTag string) (tagMsg string, err error) {
+	if tagMap, err := s.getTags(); err != nil {
+		return "", err
+	} else {
+		targetTag := strings.Join([]string{s.Repository, inputTag}, VersionSeparator)
+		cmd := exec.Command("docker", "push", targetTag)
+		if _, err := cmd.CombinedOutput(); err != nil {
+			return "", err
+		}
+		if _, exist := tagMap[inputTag]; exist {
+			return fmt.Sprintf("repushed: %s", targetTag), nil
+		} else {
+			return fmt.Sprintf("pushed: %s", targetTag), nil
+		}
+	}
 }

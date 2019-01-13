@@ -46,8 +46,54 @@ echo "dep _:1.0.0" | docker run --rm -i gofunky/tuplip build from stdin
 ### build
 
 `tuplip build` generates all possible tag representations that a given Docker image should receive.
-By default, all tags are printed line by line to the `stdout`.
-Errors are printed to the `stderr`.
+By default, all tags are printed line by line to the `stdout`. Errors are printed to the `stderr`.
+
+### tag
+
+`tuplip tag` tags the given source image with all tags that the `build` command would generate.
+A repository can be defined to be prefixed to the tags. Pass `""` as argument to use it without a repository. 
+Docker needs to be installed. If you usually need `sudo` for the docker cli, also use `sudo` for `tuplip`.
+
+```bash
+sudo ~/go/bin/tuplip tag source-tag matfax/ignore from test _:0.0.1 -l
+```
+
+#### Result
+
+```bash
+latest
+test
+0
+0.0
+0.0.1
+0-test
+0.0-test
+0.0.1-test
+```
+
+### push
+
+`tuplip push` tags the given source image with all tags that the `build` command would generate,
+and pushes them afterwards. Contrasted to `docker push org/repository`, this method ensures that only the intended
+tags are pushed, and no accidentally pulled outdated ones with the same repository prefix.
+Docker needs to be installed. If you usually need `sudo` for the docker cli, also use `sudo` for `tuplip`.
+You need to be logged in to the Docker Hub for pushes (e.g., by calling `docker login`).
+
+```bash
+sudo ~/go/bin/tuplip push source-tag matfax/ignore from test _:0.0.2
+```
+
+#### Result
+
+```bash
+repushed: matfax/ignore:0
+repushed: matfax/ignore:0.0
+pushed: matfax/ignore:0.0.2
+repushed: matfax/ignore:test
+repushed: matfax/ignore:0-test
+repushed: matfax/ignore:0.0-test
+pushed: matfax/ignore:0.0.2-test
+```
 
 ### find
 

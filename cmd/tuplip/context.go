@@ -30,6 +30,34 @@ type sourceOption struct {
 	paramOption `embed`
 }
 
+// fromRepositoryOption defines a command branch to determine the source of the tag vectors and a repository name.
+type fromRepositoryOption struct {
+	// From command determines the source of the tag vectors.
+	From fileOption `cmd help:"determine the source of the tag vectors"`
+	// Repository opens a positional argument in the command.
+	Repository struct {
+		// From command determines the source of the tag vectors that need the repository.
+		From struct {
+			stdinOption `embed`
+			paramOption `embed`
+		} `cmd help:"determine the source of the tag vectors"`
+		// Repository is the Docker Hub repository of the root tag vector in the format `organization/repository`.
+		Repository string `arg env:"DOCKER_REPOSITORY" help:"the Docker Hub repository of the root tag vector in the format 'organization/repository'"`
+	} `arg`
+}
+
+// sourceTagOption defines a command branch to determine the source of the tag vectors, repository name, and source tag.
+type sourceTagOption struct {
+	// CheckSemver flag enables semantic version checks
+	CheckSemver bool `short:"c" help:"check versioned tag vectors for valid semantic version syntax"`
+	// SourceTag opens a positional argument in the command.
+	SourceTag struct {
+		fromRepositoryOption `embed`
+		// SourceTag is the tag of the source image that is to be tagged.
+		SourceTag string `arg help:"the source tag of the image that should receive the generated tags"`
+	} `arg`
+}
+
 // toRoot determines the root command and passes the given tuplip source to it.
 func (t tuplipContext) toRoot(ctx *kong.Context, src *tupliplib.TuplipSource) error {
 	command := strings.SplitN(ctx.Command(), " ", 2)[0]
