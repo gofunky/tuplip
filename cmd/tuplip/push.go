@@ -7,7 +7,7 @@ import (
 
 // pushCmd contains the options for the push command.
 type pushCmd struct {
-	sourceTagOption `embed`
+	sourceTagOption `embed:""`
 }
 
 // run implements main.rootCmd.run by executing the tagging, and then the pushing process.

@@ -7,7 +7,7 @@ import (
 
 // tagCmd contains the options for the tag command.
 type tagCmd struct {
-	sourceTagOption `embed`
+	sourceTagOption `embed:""`
 }
 
 // run implements main.rootCmd.run by executing the tagging process.

@@ -7,7 +7,7 @@ import (
 
 // findCmd contains the options for the find command.
 type findCmd struct {
-	fromRepositoryOption `embed`
+	fromRepositoryOption `embed:""`
 }
 
 // run implements main.rootCmd.run by executing the find.

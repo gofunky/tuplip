@@ -7,14 +7,14 @@ import (
 // fileOption defines a command branch that contains only the file command.
 type fileOption struct {
 	// File to read the tag vectors from a Dockerfile.
-	File fileCmd `cmd help:"read the tag vectors from a Dockerfile"`
+	File fileCmd `cmd:"" help:"read the tag vectors from a Dockerfile"`
 }
 
 // fileCmd defines a command to read tag vectors from a Dockerfile.
 type fileCmd struct {
-	Context tuplipContext `embed`
+	Context tuplipContext `embed:""`
 	// File is the Dockerfile that contains the vectors as FROM instructions.
-	File string `arg type:"existingfile" default:"Dockerfile" help:"the Dockerfile containing the vectors as FROM instructions"`
+	File string `arg:"" type:"existingfile" default:"Dockerfile" help:"the Dockerfile containing the vectors as FROM instructions"`
 }
 
 // Run implements a dynamic interface from kong by executing a command using given file argument as input.

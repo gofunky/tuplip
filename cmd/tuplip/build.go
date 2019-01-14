@@ -10,7 +10,7 @@ type buildCmd struct {
 	// CheckSemver flag enables semantic version checks
 	CheckSemver bool `short:"c" help:"check versioned tag vectors for valid semantic version syntax"`
 	// From command determines the source of the tag vectors.
-	From sourceOption `cmd help:"determine the source of the tag vectors"`
+	From sourceOption `cmd:"" help:"determine the source of the tag vectors"`
 }
 
 // run implements main.rootCmd.run by executing the build.

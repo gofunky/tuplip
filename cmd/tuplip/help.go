@@ -35,7 +35,7 @@ For more information, visit the GitHub project https://github.com/gofunky/tuplip
 
 // helpCmd contains the options for the help command.
 type helpCmd struct {
-	Command []string `arg optional help:"the commands for which to show help" sep:" "`
+	Command []string `arg:"" optional:"" help:"the commands for which to show help" sep:" "`
 }
 
 // Run shows help.
