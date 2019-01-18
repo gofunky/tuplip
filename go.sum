@@ -1,3 +1,5 @@
+github.com/ahmetb/govvv v0.2.0 h1:3rzpWlytDIDQfL64/Kbjs88tNJltY9E8sk1tNju6FAU=
+github.com/ahmetb/govvv v0.2.0/go.mod h1:4WRFpdWtc/YtKgPFwa1dr5+9hiRY5uKAL08bOlxOR6s=
 github.com/alecthomas/kong v0.1.15 h1:IWBg+KrLvoHBicD50OzMI8fKjrtAa1okMR9g38HVM/s=
 github.com/alecthomas/kong v0.1.15/go.mod h1:0m2VYms8rH0qbCqVB2gvGHk74bqLIq0HXjCs5bNbNQU=
 github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf h1:eg0MeVzsP1G42dRafH3vf+al2vQIJU0YHX+1Tw87oco=

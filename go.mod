@@ -1,6 +1,7 @@
 module github.com/gofunky/tuplip
 
 require (
+	github.com/ahmetb/govvv v0.2.0 // indirect
 	github.com/alecthomas/kong v0.1.15
 	github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf // indirect
 	github.com/deckarep/golang-set v1.7.1

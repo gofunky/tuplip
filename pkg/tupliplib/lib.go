@@ -6,6 +6,7 @@ import (
 	"github.com/gofunky/automi/stream"
 	"io"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 )
 
@@ -56,20 +57,24 @@ func (t *Tuplip) FromFile(src string) (source *TuplipSource, err error) {
 	logger.InfoWith("queueing read from Dockerfile").
 		String("file", src).
 		Write()
-	if content, readErr := ioutil.ReadFile(src); readErr != nil {
-		return nil, readErr
+	absSrc, err := filepath.Abs(src)
+	if err != nil {
+		return nil, err
+	}
+	content, err := ioutil.ReadFile(absSrc)
+	if err != nil {
+		return nil, err
+	}
+	lines := strings.Split(string(content), "\n")
+	if markedLines, repository, err := markRootInstruction(lines); err != nil {
+		return nil, err
 	} else {
-		lines := strings.Split(string(content), "\n")
-		if markedLines, repository, err := markRootInstruction(lines); err != nil {
-			return nil, err
-		} else {
-			stm := stream.New(emitters.Slice(markedLines))
-			stm.Filter(nonEmpty)
-			stm.Filter(fromInstruction)
-			stm.Map(toTagVector)
-			source = &TuplipSource{tuplip: t, stream: stm, Repository: repository}
-			return source, nil
-		}
+		stm := stream.New(emitters.Slice(markedLines))
+		stm.Filter(nonEmpty)
+		stm.Filter(fromInstruction)
+		stm.Map(toTagVector)
+		source = &TuplipSource{tuplip: t, stream: stm, Repository: repository}
+		return source, nil
 	}
 }
 

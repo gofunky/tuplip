@@ -1,8 +1,10 @@
 package tupliplib
 
 import (
+	"bufio"
 	"github.com/deckarep/golang-set"
-	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -207,16 +209,22 @@ func TestTuplipStream_FindFromReader(t *testing.T) {
 
 func TestTuplipStream_BuildFromFile(t *testing.T) {
 	t.Run("Test Dockerfile", func(t *testing.T) {
-		expectedFile, err := ioutil.ReadFile("../../test/tags.txt")
+		filePath, err := filepath.Abs("./../../test/tags.txt")
 		if err != nil {
-			t.Errorf("test error = %v", err)
-			return
+			panic(err)
 		}
-		expectedLines := strings.Split(string(expectedFile), "\n")
 		expectedSet := mapset.NewSet()
-		for _, l := range expectedLines {
-			if l != "" {
-				expectedSet.Add(l)
+		file, err := os.Open(filePath)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if line != "" {
+				expectedSet.Add(line)
 			}
 		}
 		tuplipSrc, err := new(Tuplip).FromFile("../../test/Dockerfile")
@@ -238,7 +246,7 @@ func TestTuplipStream_BuildFromFile(t *testing.T) {
 		}
 		gotOutput := mapset.NewSetFromSlice(collector.Get())
 		if !gotOutput.Equal(expectedSet) {
-			t.Errorf("Tuplip.Build() = %v, want %v, difference %v",
+			t.Errorf("Tuplip.Build() = %v,\nwant %v,\ndifference %v",
 				gotOutput, expectedSet, gotOutput.Difference(expectedSet))
 		}
 	})
@@ -280,8 +288,7 @@ func TestTuplip_getTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tu := NewTuplipSource(&Tuplip{}, nil)
-			tu.Repository = tt.fields.Repository
+			tu := &TuplipSource{Repository: tt.fields.Repository, tuplip: &Tuplip{}}
 			tagSet, err := tu.getTags()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tuplip.getTags() error = %v, wantErr %v", err, tt.wantErr)
