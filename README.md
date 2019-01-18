@@ -86,13 +86,13 @@ sudo ~/go/bin/tuplip push source-tag matfax/ignore from test _:0.0.2
 #### Result
 
 ```bash
-repushed: matfax/ignore:0
-repushed: matfax/ignore:0.0
-pushed: matfax/ignore:0.0.2
-repushed: matfax/ignore:test
-repushed: matfax/ignore:0-test
-repushed: matfax/ignore:0.0-test
-pushed: matfax/ignore:0.0.2-test
+matfax/ignore:0
+matfax/ignore:0.0
+matfax/ignore:0.0.2
+matfax/ignore:test
+matfax/ignore:0-test
+matfax/ignore:0.0-test
+matfax/ignore:0.0.2-test
 ```
 
 ### find
@@ -361,4 +361,63 @@ echo "something; fancy" | tuplip build from stdin --separator=";"
 something
 fancy
 fancy-something
+```
+
+### straight
+
+`--straight` lets tuplip use the input tags directly without any mixing.
+It is available in the `tag` and `push` commands.
+
+#### Example
+
+```bash
+tuplip push image to gofunky/ignore from foo goo -s
+```
+
+#### Result
+
+```bash
+gofunky/ignore:foo
+gofunky/ignore:goo
+```
+
+Notice that there is no `foo-goo` present since the given arguments are no tag vectors but simple input tags that are passed to docker.
+
+### verbose
+
+`--verbose` prints enables descriptive logging to the stderr.
+Nevertheless, stdout will only receive the output tags to ensure a strict separation that
+doesn't hinder any post-processing.
+
+#### Example
+
+```bash
+tuplip push image to gofunky/ignore from foo goo -s --verbose
+```
+
+#### StdErr
+
+```bash
+{"level":"info","message":"queueing read from slice"}
+{"level":"info","message":"queueing tagging","source tag":"image"}
+{"level":"info","message":"execute","args":"docker"}
+{"level":"info","message":"queueing push"}
+{"level":"info","message":"execute","args":"docker"}
+{"level":"info","message":"execute","args":"docker tag image gofunky/ignore:foo"}
+{"level":"info","message":"tagged","tag":"gofunky/ignore:foo"}
+{"level":"info","message":"fetching tags for remote repository","repository":"gofunky/ignore"}
+{"level":"info","message":"execute","args":"docker tag image gofunky/ignore:goo"}
+{"level":"info","message":"tagged","tag":"gofunky/ignore:goo"}
+{"level":"info","message":"execute","args":"docker push gofunky/ignore:foo"}
+{"level":"info","message":"pushed","tag":"gofunky/ignore:foo"}
+{"level":"info","message":"fetching tags for remote repository","repository":"gofunky/ignore"}
+{"level":"info","message":"execute","args":"docker push gofunky/ignore:goo"}
+{"level":"info","message":"pushed","tag":"gofunky/ignore:goo"}
+```
+
+#### StdOut
+
+```bash
+gofunky/ignore:foo
+gofunky/ignore:goo
 ```
