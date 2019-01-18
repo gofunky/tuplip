@@ -3,7 +3,10 @@ language: go
 matrix:
   include:
     - go: "1.11.x"
-      script: go test -v ./...
+
+script:
+  - go install cmd/tuplip/
+  - go test -v ./...
 
 env:
   - GO111MODULE=on
