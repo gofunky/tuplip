@@ -14,7 +14,7 @@ type fileOption struct {
 type fileCmd struct {
 	Context tuplipContext `embed:""`
 	// File is the Dockerfile that contains the vectors as FROM instructions.
-	File string `arg:"" type:"existingfile" default:"Dockerfile" help:"the Dockerfile containing the vectors as FROM instructions"`
+	File string `arg:"" type:"existingfile" help:"the Dockerfile containing the vectors as FROM instructions"`
 }
 
 // Run implements a dynamic interface from kong by executing a command using given file argument as input.

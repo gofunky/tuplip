@@ -148,35 +148,40 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 }
 
 // getTags fetches the set of tags for the given Docker repository.
+// The returned TagMap is always initialized.
 func (s *TuplipSource) getTags() (tagMap map[string]mapset.Set, err error) {
+	tagMap = make(map[string]mapset.Set)
 	if err = validation.Validate(s.Repository,
 		validation.Required,
 	); err != nil {
 		return nil, err
 	}
-	if hub, err := registry.NewCustom(DockerRegistry, registry.Options{
-		Logf: registry.Quiet,
-	}); err != nil {
-		return nil, err
-	} else {
-		if tags, err := hub.Tags(s.Repository); err != nil {
-			return nil, err
-		} else {
-			if len(tags) == 0 {
-				return nil, errors.New("no Docker tags could be found on the given remote")
-			}
-			tagMap := make(map[string]mapset.Set)
-			for _, tag := range tags {
-				tagVectors := strings.Split(tag, DockerTagSeparator)
-				vectorSet := mapset.NewSet()
-				for _, v := range tagVectors {
-					vectorSet.Add(v)
-				}
-				tagMap[tag] = vectorSet
-			}
-			return tagMap, nil
-		}
+	logger.InfoWith("fetching tags for remote repository").String("repository", s.Repository).Write()
+	if s.tuplip.Simulate {
+		return make(map[string]mapset.Set), nil
 	}
+	hub, err := registry.NewCustom(DockerRegistry, registry.Options{
+		Logf: registry.Quiet,
+	})
+	if err != nil {
+		return nil, err
+	}
+	tags, err := hub.Tags(s.Repository)
+	if err != nil {
+		return nil, err
+	}
+	if len(tags) == 0 {
+		return nil, errors.New("no Docker tags could be found on the given remote")
+	}
+	for _, tag := range tags {
+		tagVectors := strings.Split(tag, DockerTagSeparator)
+		vectorSet := mapset.NewSet()
+		for _, v := range tagVectors {
+			vectorSet.Add(v)
+		}
+		tagMap[tag] = vectorSet
+	}
+	return
 }
 
 // dockerTag tags all inputTags given the sourceTag.
@@ -187,27 +192,53 @@ func (s *TuplipSource) dockerTag(sourceTag string) func(inputTag string) (string
 			targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
 		}
 		cmd := exec.Command("docker", "tag", sourceTag, targetTag)
-		if _, err := cmd.CombinedOutput(); err != nil {
-			return "", err
+		logger.InfoWith("execute").
+			String("args", strings.Join(cmd.Args, " ")).
+			Write()
+		if !s.tuplip.Simulate {
+			if _, err := cmd.CombinedOutput(); err != nil {
+				return "", err
+			}
 		}
+		logger.InfoWith("tagged").String("tag", targetTag).Write()
 		return inputTag, nil
 	}
 }
 
 // dockerPush pushes all inputTags to the Docker Hub and prepends a success or fail message to the respective tags.
 func (s *TuplipSource) dockerPush(inputTag string) (tagMsg string, err error) {
-	if tagMap, err := s.getTags(); err != nil {
-		return "", err
-	} else {
-		targetTag := strings.Join([]string{s.Repository, inputTag}, VersionSeparator)
-		cmd := exec.Command("docker", "push", targetTag)
+	tagMap, _ := s.getTags()
+	var targetTag = inputTag
+	if repo := s.Repository; repo != "" {
+		targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
+	}
+	cmd := exec.Command("docker", "push", targetTag)
+	logger.InfoWith("execute").
+		String("args", strings.Join(cmd.Args, " ")).
+		Write()
+	if !s.tuplip.Simulate {
 		if _, err := cmd.CombinedOutput(); err != nil {
 			return "", err
 		}
-		if _, exist := tagMap[inputTag]; exist {
-			return fmt.Sprintf("repushed: %s", targetTag), nil
-		} else {
-			return fmt.Sprintf("pushed: %s", targetTag), nil
+	}
+	if _, exist := tagMap[inputTag]; exist {
+		logger.InfoWith("repushed").String("tag", targetTag).Write()
+	} else {
+		logger.InfoWith("pushed").String("tag", targetTag).Write()
+	}
+	return targetTag, nil
+}
+
+// requireDocker ensures that docker is available in the PATH.
+func (s *TuplipSource) requireDocker() error {
+	cmd := exec.Command("docker")
+	logger.InfoWith("execute").
+		String("args", strings.Join(cmd.Args, " ")).
+		Write()
+	if !s.tuplip.Simulate {
+		if _, err := cmd.CombinedOutput(); err != nil {
+			return err
 		}
 	}
+	return nil
 }

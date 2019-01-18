@@ -6,6 +6,7 @@ require (
 	github.com/deckarep/golang-set v1.7.1
 	github.com/docker/distribution v2.7.0+incompatible // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
+	github.com/francoispqt/onelog v0.0.0-20181228065221-f24ed9c6639d
 	github.com/go-faces/logger v0.0.0-20180617163310-c221c1151623 // indirect
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
 	github.com/gofunky/automi v0.0.0-20190106212427-af9d4ec3512a
@@ -16,5 +17,6 @@ require (
 	github.com/oleiade/reflections v1.0.0
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f
 	github.com/sirupsen/logrus v1.3.0 // indirect
 )

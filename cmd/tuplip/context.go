@@ -32,14 +32,11 @@ type sourceOption struct {
 
 // fromRepositoryOption defines a command branch to determine the source of the tag vectors and a repository name.
 type fromRepositoryOption struct {
-	// From command determines the source of the tag vectors.
-	From fileOption `cmd:"" help:"determine the source of the tag vectors"`
 	// Repository opens a positional argument in the command.
 	Repository struct {
 		// From command determines the source of the tag vectors that need the repository.
 		From struct {
-			stdinOption `embed:""`
-			paramOption `embed:""`
+			sourceOption `embed:""`
 		} `cmd:"" help:"determine the source of the tag vectors"`
 		// Repository is the Docker Hub repository of the root tag vector in the format `organization/repository`.
 		Repository string `arg:"" env:"DOCKER_REPOSITORY" help:"the Docker Hub repository of the root tag vector in the format 'organization/repository'"`
@@ -52,9 +49,14 @@ type sourceTagOption struct {
 	CheckSemver bool `short:"c" help:"check versioned tag vectors for valid semantic version syntax"`
 	// SourceTag opens a positional argument in the command.
 	SourceTag struct {
-		fromRepositoryOption `embed:""`
+		// From command determines the source of the tag vectors.
+		From sourceOption `cmd:"" help:"determine the source of the tag vectors"`
 		// SourceTag is the tag of the source image that is to be tagged.
 		SourceTag string `arg:"" help:"the source tag of the image that should receive the generated tags"`
+		// To command defines the target repository.
+		To struct {
+			fromRepositoryOption `embed:""`
+		} `cmd:"" help:"set a target repository"`
 	} `arg:""`
 }
 
@@ -62,16 +64,16 @@ type sourceTagOption struct {
 func (t tuplipContext) toRoot(ctx *kong.Context, src *tupliplib.TuplipSource) error {
 	command := strings.SplitN(ctx.Command(), " ", 2)[0]
 	capCommand := strings.Title(command)
-	if cmd, err := reflections.GetField(cli, capCommand); err != nil {
+	cmd, err := reflections.GetField(cli, capCommand)
+	if err != nil {
 		return err
-	} else {
-		rootCmd := cmd.(rootCmd)
-		if stm, stmErr := rootCmd.run(src); stmErr != nil {
-			return stmErr
-		} else {
-			return t.write(stm)
-		}
 	}
+	rootCmd := cmd.(rootCmd)
+	stm, err := rootCmd.run(src)
+	if err != nil {
+		return err
+	}
+	return t.write(stm)
 }
 
 // write the results from the given tuplip stream to the stdout.

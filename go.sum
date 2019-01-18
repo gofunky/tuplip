@@ -10,6 +10,10 @@ github.com/docker/distribution v2.7.0+incompatible h1:neUDAlf3wX6Ml4HdqTrbcOHXtf
 github.com/docker/distribution v2.7.0+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 h1:UhxFibDNY/bfvqU5CAUmr9zpesgbU6SWc8/B4mflAE4=
 github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7/go.mod h1:cyGadeNEkKy96OOhEzfZl+yxihPEzKnqJwvfuSUqbZE=
+github.com/francoispqt/gojay v0.0.0-20181220093123-f2cc13a668ca h1:F2BD6Vhei4w0rtm4eNpzylNsB07CcCbpYA+xlqMx3mA=
+github.com/francoispqt/gojay v0.0.0-20181220093123-f2cc13a668ca/go.mod h1:H8Wgri1Asi1VevY3ySdpIK5+KCpqzToVswNq8g2xZj4=
+github.com/francoispqt/onelog v0.0.0-20181228065221-f24ed9c6639d h1:DZh2PCpC00JeAWwJGfADRO8kJ2HkxJW6jGUvgcbQZCk=
+github.com/francoispqt/onelog v0.0.0-20181228065221-f24ed9c6639d/go.mod h1:pOoD5eVmS5VKeF71a4gkvwkMuTRCVdgN7KKcLR/gVs8=
 github.com/go-faces/logger v0.0.0-20180617163310-c221c1151623 h1:xVUX8RsBcPkY/71ROl0LH1R/CdWb2T4SgZG5/YBzLG8=
 github.com/go-faces/logger v0.0.0-20180617163310-c221c1151623/go.mod h1:SVVgV84TH5kwnQnkxfbczA9G/f7/dJXNmajoScO6zTY=
 github.com/go-ozzo/ozzo-validation v3.5.0+incompatible h1:sUy/in/P6askYr16XJgTKq/0SZhiWsdg4WZGaLsGQkM=
@@ -34,6 +38,8 @@ github.com/opencontainers/image-spec v1.0.1 h1:JMemWkRwHx4Zj+fVxWoMCFm/8sYGGrUVo
 github.com/opencontainers/image-spec v1.0.1/go.mod h1:BtxoFyWECRxE4U/7sNtV5W15zMzWCbyJoFRP3s7yZA0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f h1:onGP+qmYmjKs7pkmi9j0mwyr97/D5wki80e74aKIOxg=
+github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f/go.mod h1:cq57a4l475CeMvE7RRpSui1MEqCmhirIt1E7kl8BC2Q=
 github.com/sirupsen/logrus v1.3.0 h1:hI/7Q+DtNZ2kINb6qt/lS+IyXnHQe9e90POfeewL/ME=
 github.com/sirupsen/logrus v1.3.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

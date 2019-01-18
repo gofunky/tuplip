@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/deckarep/golang-set"
 	"math"
-	"os/exec"
 	"sort"
 	"strings"
 )
@@ -175,13 +174,4 @@ func mostSeparators(values []string, sep string) (result string) {
 		}
 	}
 	return result
-}
-
-// requireDocker ensures that docker is available in the PATH.
-func requireDocker() error {
-	cmd := exec.Command("docker")
-	if _, err := cmd.CombinedOutput(); err != nil {
-		return err
-	}
-	return nil
 }

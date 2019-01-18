@@ -10,8 +10,8 @@ ENV GO111MODULE=on
 ARG VERSION=latest
 
 RUN go get -v github.com/ahmetb/govvv
-RUN go test -v ./...
 RUN govvv build -v -o /go/bin/tuplip ./cmd/tuplip
+RUN go test -v ./...
 
 FROM gofunky/git:2.18.1
 LABEL maintainer="mat@fax.fyi"

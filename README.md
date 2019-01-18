@@ -51,7 +51,7 @@ By default, all tags are printed line by line to the `stdout`. Errors are printe
 ### tag
 
 `tuplip tag` tags the given source image with all tags that the `build` command would generate.
-A repository can be defined to be prefixed to the tags. Pass `""` as argument to use it without a repository. 
+A repository can be defined to be prefixed to the tags. Leave the argument out to use it without a repository. 
 Docker needs to be installed. If you usually need `sudo` for the docker cli, also use `sudo` for `tuplip`.
 
 ```bash
