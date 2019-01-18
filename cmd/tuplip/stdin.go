@@ -16,7 +16,7 @@ type stdinOption struct {
 type stdinCmd struct {
 	Context tuplipContext `embed:""`
 	// Separator that splits the separate tag vectors. The default separator is a single space.
-	Separator string `optional:"" short:"s" env:"IFS" default:" " help:"the separator that splits the separate tag vectors from the stdin"`
+	Separator string `optional:"" env:"IFS" default:" " help:"the separator that splits the separate tag vectors from the stdin"`
 }
 
 // Run implements a dynamic interface from kong by executing a command using the stdin as input.

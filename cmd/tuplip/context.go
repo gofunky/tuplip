@@ -60,6 +60,12 @@ type sourceTagOption struct {
 	} `arg:""`
 }
 
+// processingFlags define flags for tag processing.
+type processingFlags struct {
+	// Straight defines a flag for straight processing without a build.
+	Straight bool `short:"s" help:"use the input tags directly without any mixing"`
+}
+
 // toRoot determines the root command and passes the given tuplip source to it.
 func (t tuplipContext) toRoot(ctx *kong.Context, src *tupliplib.TuplipSource) error {
 	command := strings.SplitN(ctx.Command(), " ", 2)[0]

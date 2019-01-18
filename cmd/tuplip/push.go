@@ -7,11 +7,12 @@ import (
 
 // pushCmd contains the options for the push command.
 type pushCmd struct {
+	sourceTagOption `embed:""`
+	processingFlags `embed:""`
 	// To command defines the target repository.
 	To struct {
 		fromRepositoryOption `embed:""`
 	} `cmd:"" help:"set a target repository"`
-	sourceTagOption `embed:""`
 	// From command determines the source of the tag vectors.
 	From sourceOption `cmd:"" help:"determine the source of the tag vectors"`
 }
@@ -22,7 +23,15 @@ func (s pushCmd) run(src *tupliplib.TuplipSource) (stream *stream.Stream, err er
 	if repo != "" {
 		src.Repository = repo
 	}
-	stream, err = src.Push(s.CheckSemver, s.sourceTagOption.SourceTag.SourceTag)
+	if !s.processingFlags.Straight {
+		stream = src.Build(s.CheckSemver)
+	}
+	if sourceTag := s.sourceTagOption.SourceTag.SourceTag; sourceTag != "" {
+		if stream, err = src.Tag(sourceTag); err != nil {
+			return
+		}
+	}
+	stream, err = src.Push()
 	if err != nil {
 		return nil, err
 	}

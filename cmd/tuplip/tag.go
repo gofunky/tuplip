@@ -8,6 +8,7 @@ import (
 // tagCmd contains the options for the tag command.
 type tagCmd struct {
 	sourceTagOption `embed:""`
+	processingFlags `embed:""`
 }
 
 // run implements main.rootCmd.run by executing the tagging process.
@@ -15,7 +16,10 @@ func (s tagCmd) run(src *tupliplib.TuplipSource) (stream *stream.Stream, err err
 	if r := s.sourceTagOption.SourceTag.To.Repository.Repository; r != "" {
 		src.Repository = r
 	}
-	stream, err = src.Tag(s.CheckSemver, s.sourceTagOption.SourceTag.SourceTag)
+	if !s.processingFlags.Straight {
+		stream = src.Build(s.CheckSemver)
+	}
+	stream, err = src.Tag(s.sourceTagOption.SourceTag.SourceTag)
 	if err != nil {
 		return nil, err
 	}

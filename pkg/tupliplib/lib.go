@@ -96,55 +96,26 @@ func (s *TuplipSource) Build(requireSemver bool) (stream *stream.Stream) {
 	return
 }
 
-// Tag extends the *TuplipSource.Build stream by a `docker tag` execution for all generated tags.
-// requireSemver enables semantic version checks. Short versions are not allowed then.
-func (s *TuplipSource) Tag(requireSemver bool, sourceTag string) (stream *stream.Stream, err error) {
+// Tag extends the given stream by a `docker tag` execution for all incoming tags.
+func (s *TuplipSource) Tag(sourceTag string) (stream *stream.Stream, err error) {
 	logger.InfoWith("queueing tagging").
-		Bool("require semantic version", requireSemver).
-		String("source tag", sourceTag).
-		Write()
-	if err = s.requireDocker(); err != nil {
-		return
-	}
-	stream = s.Build(requireSemver)
-	stream.Map(s.dockerTag(sourceTag))
-	return
-}
-
-// Push extends the *TuplipSource.Tag stream by a `docker push` execution for all generated tags.
-// requireSemver enables semantic version checks. Short versions are not allowed then.
-func (s *TuplipSource) Push(requireSemver bool, sourceTag string) (stream *stream.Stream, err error) {
-	logger.InfoWith("queueing push").
-		Bool("require semantic version", requireSemver).
-		String("source tag", sourceTag).
-		Write()
-	if sourceTag == "" {
-		if err = s.requireDocker(); err != nil {
-			return
-		}
-		stream = s.Build(requireSemver)
-	} else {
-		if stream, err = s.Tag(requireSemver, sourceTag); err != nil {
-			return
-		}
-	}
-	stream.Map(s.dockerPush)
-	return
-}
-
-// DirectPush performs a tagging and `docker push` execution for all given tags on the given source tag.
-// TODO Check if this can be done in Push()
-func (s *TuplipSource) DirectPush(sourceTag string) (stream *stream.Stream, err error) {
-	logger.InfoWith("queueing direct push").
 		String("source tag", sourceTag).
 		Write()
 	if err = s.requireDocker(); err != nil {
 		return
 	}
 	stream = s.stream
-	if sourceTag == "" {
-		stream.Map(s.dockerTag(sourceTag))
+	stream.Map(s.dockerTag(sourceTag))
+	return
+}
+
+// Push extends the given stream by a `docker push` execution for all incoming tags.
+func (s *TuplipSource) Push() (stream *stream.Stream, err error) {
+	logger.Info("queueing push")
+	if err = s.requireDocker(); err != nil {
+		return
 	}
+	stream = s.stream
 	stream.Map(s.dockerPush)
 	return
 }
