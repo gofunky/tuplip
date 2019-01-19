@@ -116,7 +116,7 @@ func (s *TuplipSource) Push() (stream *stream.Stream, err error) {
 		return
 	}
 	stream = s.stream
-	stream.Map(s.dockerPush)
+	stream.Map(s.dockerPush())
 	return
 }
 

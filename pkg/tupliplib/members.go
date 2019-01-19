@@ -206,27 +206,29 @@ func (s *TuplipSource) dockerTag(sourceTag string) func(inputTag string) (string
 }
 
 // dockerPush pushes all inputTags to the Docker Hub and prepends a success or fail message to the respective tags.
-func (s *TuplipSource) dockerPush(inputTag string) (tagMsg string, err error) {
+func (s *TuplipSource) dockerPush() func(inputTag string) (tagMsg string, err error) {
 	tagMap, _ := s.getTags()
-	var targetTag = inputTag
-	if repo := s.Repository; repo != "" {
-		targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
-	}
-	cmd := exec.Command("docker", "push", targetTag)
-	logger.InfoWith("execute").
-		String("args", strings.Join(cmd.Args, " ")).
-		Write()
-	if !s.tuplip.Simulate {
-		if _, err := cmd.CombinedOutput(); err != nil {
-			return "", err
+	return func(inputTag string) (tagMsg string, err error) {
+		var targetTag = inputTag
+		if repo := s.Repository; repo != "" {
+			targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
 		}
+		cmd := exec.Command("docker", "push", targetTag)
+		logger.InfoWith("execute").
+			String("args", strings.Join(cmd.Args, " ")).
+			Write()
+		if !s.tuplip.Simulate {
+			if _, err := cmd.CombinedOutput(); err != nil {
+				return "", err
+			}
+		}
+		if _, exist := tagMap[inputTag]; exist {
+			logger.InfoWith("repushed").String("tag", targetTag).Write()
+		} else {
+			logger.InfoWith("pushed").String("tag", targetTag).Write()
+		}
+		return targetTag, nil
 	}
-	if _, exist := tagMap[inputTag]; exist {
-		logger.InfoWith("repushed").String("tag", targetTag).Write()
-	} else {
-		logger.InfoWith("pushed").String("tag", targetTag).Write()
-	}
-	return targetTag, nil
 }
 
 // requireDocker ensures that docker is available in the PATH.
