@@ -58,7 +58,7 @@ Docker needs to be installed. If you usually need `sudo` for the docker cli, als
 sudo ~/go/bin/tuplip tag source-tag matfax/ignore from test _:0.0.1 -l
 ```
 
-#### Result
+#### Processed Tags
 
 ```bash
 latest
@@ -83,7 +83,7 @@ You need to be logged in to the Docker Hub for pushes (e.g., by calling `docker 
 sudo ~/go/bin/tuplip push source-tag matfax/ignore from test _:0.0.2
 ```
 
-#### Result
+#### Pushed Tags
 
 ```bash
 matfax/ignore:0
@@ -374,7 +374,7 @@ It is available in the `tag` and `push` commands.
 tuplip push image to gofunky/ignore from foo goo -s
 ```
 
-#### Result
+#### Pushed Tags
 
 ```bash
 gofunky/ignore:foo
@@ -385,7 +385,7 @@ Notice that there is no `foo-goo` present since the given arguments are no tag v
 
 ### verbose
 
-`--verbose` prints enables descriptive logging to the stderr.
+`--verbose` enables descriptive logging to the stderr.
 Nevertheless, stdout will only receive the output tags to ensure a strict separation that
 doesn't hinder any post-processing.
 
