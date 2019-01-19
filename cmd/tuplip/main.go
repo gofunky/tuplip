@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/alecthomas/kong"
 	"github.com/francoispqt/onelog"
+	"github.com/gofunky/tuplip/pkg/help"
 	"github.com/gofunky/tuplip/pkg/tupliplib"
 	"os"
 )
@@ -32,10 +33,7 @@ func main() {
 		kong.Name("tuplip"),
 		kong.Description("tuplip is a convention-forming Docker tag generator and checker."),
 		kong.UsageOnError(),
-		kong.ConfigureHelp(kong.HelpOptions{
-			Summary: true,
-			Compact: true,
-		}),
+		kong.Help(help.Printer),
 		kong.Vars{
 			"version": Version,
 		},
