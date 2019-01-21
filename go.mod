@@ -10,7 +10,7 @@ require (
 	github.com/francoispqt/onelog v0.0.0-20181228065221-f24ed9c6639d
 	github.com/go-faces/logger v0.0.0-20180617163310-c221c1151623 // indirect
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
-	github.com/gofunky/automi v0.0.0-20190106212427-af9d4ec3512a
+	github.com/gofunky/automi v0.3.3
 	github.com/gofunky/semver v3.5.2+incompatible
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
