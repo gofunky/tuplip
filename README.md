@@ -43,6 +43,9 @@ echo "dep _:1.0.0" | docker run --rm -i gofunky/tuplip build from stdin
 
 ## Commands
 
+![Command Graph](./images/command-graph.svg)
+<img src="./images/command-graph.svg">
+
 ### build
 
 `tuplip build` generates all possible tag representations that a given Docker image should receive.
