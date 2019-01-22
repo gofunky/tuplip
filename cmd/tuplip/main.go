@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/alecthomas/kong"
 	"github.com/francoispqt/onelog"
-	"github.com/gofunky/tuplip/pkg/help"
 	"github.com/gofunky/tuplip/pkg/tupliplib"
 	"os"
 )
