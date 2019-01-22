@@ -54,6 +54,9 @@ func (t *Tuplip) FromSlice(src []string) *TuplipSource {
 
 // FromFile builds a tuplip source from a Dockerfile.
 func (t *Tuplip) FromFile(src string) (source *TuplipSource, err error) {
+	if src == "" {
+		src = Dockerfile
+	}
 	logger.InfoWith("queueing read from Dockerfile").
 		String("file", src).
 		Write()

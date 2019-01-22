@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/alecthomas/kong"
 	"github.com/francoispqt/onelog"
-	"github.com/gofunky/tuplip/pkg/help"
 	"github.com/gofunky/tuplip/pkg/tupliplib"
 	"os"
 )
@@ -12,8 +11,10 @@ import (
 var cli struct {
 	// Version describes the version command.
 	Version versionCmd `cmd:"" help:"display the app version"`
-	// Helo describes the help command.
+	// Help describes the help command.
 	Help helpCmd `cmd:"" help:"show help for a command"`
+	// Graph prints the command graph.
+	Graph graphCmd `cmd:"" help:"print the command graph"`
 	// Build describes the build command.
 	Build buildCmd `cmd:"" help:"build Docker tags from the given tag vectors"`
 	// Tag describes the tag command.
@@ -33,7 +34,10 @@ func main() {
 		kong.Name("tuplip"),
 		kong.Description("tuplip is a convention-forming Docker tag generator and checker."),
 		kong.UsageOnError(),
-		kong.Help(help.Printer),
+		kong.ConfigureHelp(kong.HelpOptions{
+			Tree:     true,
+			Indenter: kong.TreeIndenter,
+		}),
 		kong.Vars{
 			"version": Version,
 		},

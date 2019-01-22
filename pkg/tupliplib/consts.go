@@ -28,4 +28,7 @@ const (
 
 	// RepositorySeparator is the character that separates the organization from the name.
 	RepositorySeparator = "/"
+
+	// Dockerfile is the default name of a Dockerfile.
+	Dockerfile = "Dockerfile"
 )
