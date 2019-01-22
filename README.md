@@ -38,7 +38,7 @@ echo "dep _:1.0.0" | tuplip build from stdin
 ### Using Docker
 
 ```bash
-echo "dep _:1.0.0" | docker run --rm -i gofunky/tuplip build from stdin
+docker run --rm -i gofunky/tuplip build from dep _:1.0.0
 ```
 
 ## Commands
