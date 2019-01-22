@@ -14,7 +14,7 @@ type paramOption struct {
 type paramCmd struct {
 	Context tuplipContext `embed:""`
 	// Param is the parameter that contains the tag vectors.
-	Param []string `arg:"" help:"the space-separated list of tag vectors"`
+	Param []string `arg:"" required:"" help:"the space-separated list of tag vectors"`
 }
 
 // Run implements a dynamic interface from kong by executing a command using given param argument as input.
