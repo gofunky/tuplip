@@ -52,11 +52,11 @@ type sourceTagOption struct {
 		// From command determines the source of the tag vectors.
 		From sourceOption `cmd:"" help:"determine the source of the tag vectors"`
 		// SourceTag is the tag of the source image that is to be tagged.
-		SourceTag string `arg:"" help:"the source tag of the image that should receive the generated tags"`
+		SourceTag string `arg:"" help:"the source tag of the image that should receive the new tags (skippable)"`
 		// To command defines the target repository.
 		To struct {
 			fromRepositoryOption `embed:""`
-		} `cmd:"" help:"set a target repository"`
+		} `cmd:"" help:"set a target repository (skippable)"`
 	} `arg:""`
 }
 

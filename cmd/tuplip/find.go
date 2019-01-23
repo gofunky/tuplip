@@ -10,7 +10,7 @@ type findCmd struct {
 	// In command defines the target repository.
 	In struct {
 		fromRepositoryOption `embed:""`
-	} `cmd:"" help:"set a target repository"`
+	} `cmd:"" help:"set a target repository (skippable)"`
 	// From command determines the source of the tag vectors.
 	From fileOption `cmd:"" help:"determine the source of the tag vectors"`
 }

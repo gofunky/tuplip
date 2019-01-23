@@ -12,9 +12,9 @@ type pushCmd struct {
 	// To command defines the target repository.
 	To struct {
 		fromRepositoryOption `embed:""`
-	} `cmd:"" help:"set a target repository"`
+	} `cmd:"" help:"set a target repository (skippable)"`
 	// From command determines the source of the tag vectors.
-	From sourceOption `cmd:"" help:"determine the source of the tag vectors"`
+	From sourceOption `cmd:"" help:"push the image tags without tagging"`
 }
 
 // run implements main.rootCmd.run by executing the tagging, and then the pushing process.
