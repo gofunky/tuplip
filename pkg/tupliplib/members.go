@@ -147,6 +147,27 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 	return inputSet
 }
 
+// withFilter excludes all tags without the given set of tag vectors from the output set.
+func (t Tuplip) withFilter(inputSet mapset.Set) bool {
+	for _, filterVector := range t.Filter {
+		var contains bool
+		inputSet.Each(func(i interface{}) bool {
+			if i.(mapset.Set).Contains(filterVector) {
+				contains = true
+			}
+			return contains
+		})
+		if !contains {
+			logger.InfoWith("filtering tag since the required filter vector is missing").
+				String("tag", inputSet.String()).
+				String("filter vector", filterVector).
+				Write()
+			return false
+		}
+	}
+	return true
+}
+
 // getTags fetches the set of tags for the given Docker repository.
 // The returned TagMap is always initialized.
 func (s *TuplipSource) getTags() (tagMap map[string]mapset.Set, err error) {

@@ -20,6 +20,8 @@ type Tuplip struct {
 	ExcludeBase bool `short:"b" help:"excludes the base alias without version suffix from the considered version variants"`
 	// AddLatest adds an additional 'latest' tag to the result set.
 	AddLatest bool `short:"l" help:"adds an additional 'latest' tag to the result set"`
+	// Filter excludes all tags without the given set of tag vectors from the output set.
+	Filter []string `short:"f" help:"excludes all tags without the given set of tag vectors from the output set"`
 	// Simulate prevents the execution of any Docker commands.
 	Simulate bool `hidden:""`
 }
@@ -94,6 +96,7 @@ func (s *TuplipSource) Build(requireSemver bool) (stream *stream.Stream) {
 	stream.Map(power)
 	stream.Map(s.tuplip.addLatestTag)
 	stream.FlatMap(failOnEmpty)
+	stream.Filter(s.tuplip.withFilter)
 	stream.FlatMap(s.tuplip.join)
 	stream.Filter(nonEmpty)
 	return

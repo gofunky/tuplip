@@ -385,6 +385,27 @@ gofunky/ignore:goo
 
 Notice that there is no `foo-goo` present since the given arguments are no tag vectors but simple input tags that are passed to docker.
 
+### filter
+
+`--filter` excludes all tags without the given set of tag vectors from the output set.
+
+#### Example
+
+```bash
+tuplip build from one two:0.1 three --filter one,two
+```
+
+#### Result
+
+```bash
+one-two
+one-two0
+one-two0.1
+one-three-two
+one-three-two0
+one-three-two0.1
+```
+
 ### verbose
 
 `--verbose` enables descriptive logging to the stderr.

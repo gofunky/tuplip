@@ -30,6 +30,14 @@ func TestBuild(t *testing.T) {
 				"foo-goo":        false,
 			},
 		},
+		"build": {
+			args: []string{"--filter=foo"},
+			stdOut: map[string]bool{
+				"goo":     false,
+				"foo":     true,
+				"foo-goo": true,
+			},
+		},
 	}
 	tests := []testBuild{
 		{
@@ -45,7 +53,11 @@ func TestBuild(t *testing.T) {
 				"queueing read from slice": true,
 				"queueing build":           true,
 			},
-			stdOut: map[string]bool{"foo-goo": true},
+			stdOut: map[string]bool{
+				"goo":     true,
+				"foo":     true,
+				"foo-goo": true,
+			},
 		},
 		{
 			args:  []string{"build", "from", "stdin"},
@@ -54,7 +66,11 @@ func TestBuild(t *testing.T) {
 				"queueing read from reader": true,
 				"queueing build":            true,
 			},
-			stdOut: map[string]bool{"foo-goo": true},
+			stdOut: map[string]bool{
+				"foo-goo": true,
+				"foo":     true,
+				"goo":     true,
+			},
 		},
 		{
 			args: []string{"find", "from", "file", "../../test/Dockerfile"},
@@ -233,7 +249,7 @@ func TestBuild(t *testing.T) {
 				for rawK, rawV := range rawTT.stdOut {
 					tt.stdOut[rawK] = rawV
 					for modK, modV := range mod.stdOut {
-						if strings.Contains(rawK, modK) {
+						if rawK == modK {
 							tt.stdOut[rawK] = modV
 						}
 					}
@@ -263,7 +279,14 @@ func TestBuild(t *testing.T) {
 						}
 					}
 					for key, want := range tt.stdOut {
-						if c.StdoutContains(key) != want {
+						stdOut := strings.Split(c.Stdout(), "\n")
+						var found bool
+						for _, stdOutLine := range stdOut {
+							if stdOutLine == key {
+								found = true
+							}
+						}
+						if found != want {
 							t.Fatalf("Expected %q = %v in stdout:\n%v", key, want, c.Stdout())
 						}
 					}
