@@ -13,6 +13,8 @@
 
 tuplip generates and checks Docker tags in a transparent and convention-forming way
 
+<!-- toc -->
+
 ## Installation
 
 ### Using `go get`
@@ -244,39 +246,50 @@ Finally, you will have an immediate notification if dependencies are updated and
 required Docker images have tags available that match them.   
 
 ```Dockerfile
-FROM golang:1.11.4 as go
-FROM gofunky/git:2.18.1
+FROM golang:1.11.4 as builder
 FROM scratch as master
 FROM gofunky/docker:18.09.0
+ARG VERSION=2.4
+ARG REPOSITORY=gofunky/ignore
 ```
 
 The above Dockerfile shows an example. It could be a separate file just for version resolving.
 Alternatively, one may also use an existing Dockerfile for a target image and build
 the target tags from it. 
 
-#### The Last Instruction
+#### ARG Instructions
 
-The last `FROM` instruction will always be interpreted as the root tag vector.
-From that, the target repository will be derived (e.g, the one to check using the `find` command).
-If no root tag vector is required, simply remove the tag from the instruction (i.e., equals the latest tag).
-If no target repository is required (e.g., for a `build` command), simply replace it with `scratch`
-(i.e., `FROM scratch`).
+The `ARG` instruction that is called `VERSION` will be interpreted as the root tag vector version.
+Alternatively, one may use the `--root-version`, or short `-r`, flag to override it.
+If no root tag vector is required, simply remove the respective `ARG` instruction.
 
-#### Versioned Instructions
+The target repository will be derived (e.g, the one to check using the `find` command)
+from the `ARG` instruction that is called `REPOSITORY`.
+If no target repository is required (e.g., for a `build` command), simply remove the respective `ARG` instruction.
 
-All other `FROM` instructions that contain a tag or version will be interpreted as dependency tag vectors.
-The `image` name (without the `org`) will be used as alias, if no separate `alias` is defined in the instruction.
+#### Versioned FROM Instructions
 
-#### Unversioned Instructions
+All `FROM` instructions that contain a tag or version will be interpreted as dependency tag vectors.
+The `image` name (without the `org`) will be used as alias by default.
+This derived alias can be overridden by setting `scratch` as `image` name and setting a custom `alias` (e.g., `FROM scratch:0.1 as dep`).
+
+#### Unversioned FROM Instructions
 
 All other `FROM` instructions that do not contain a tag or version will be interpreted as alias tag vectors.
-The `image` name (without the `org`) will be used as alias, if no separate `alias` is defined in the instruction.
+The `image` name (without the `org`) will be used as alias by default.
+This derived alias can be overridden by setting `scratch` as `image` name and setting a custom `alias` (e.g., `FROM scratch as alias`).
+
+#### Multiple Vectors per Instruction
+
+Transitive multi-vector-tagged image dependencies will be interpreted correctly.
+That means, `FROM gofunky/golang:1.11.0-alpine3.8 as builder` for instance,
+will return the vectors `golang:1.11.0` and `alpine:3.8`.
 
 ## Flags
 
 ### exclude-major
 
-`--exclude-major` excludes the major versions (e.g., `go1` for `go:1.2.3`) from the considered version variants.
+`--exclude-major` or `-m` excludes the major versions (e.g., `go1` for `go:1.2.3`) from the considered version variants.
 
 #### Example
 
@@ -294,7 +307,7 @@ go1.2.3
 
 ### exclude-minor
 
-`--exclude-minor` excludes the minor versions (e.g., `go1.2` for `go:1.2.3`) from the considered version variants.
+`--exclude-minor` or `-i` excludes the minor versions (e.g., `go1.2` for `go:1.2.3`) from the considered version variants.
 
 #### Example
 
@@ -312,7 +325,7 @@ go1.2.3
 
 ### exclude-base
 
-`--exclude-base` excludes the base alias (e.g., `go` for `go:1.2.3`) from the considered variants.
+`--exclude-base` or `-b` excludes the base alias (e.g., `go` for `go:1.2.3`) from the considered variants.
 
 #### Example
 
@@ -330,7 +343,7 @@ go1.2.3
 
 ### add-latest
 
-`--add-latest` adds the `latest` tag to the output set.
+`--add-latest` or `-l` adds the `latest` tag to the output set.
 
 #### Example
 
@@ -349,7 +362,7 @@ latest
 
 ### separator
 
-`--separator` sets a different tag vector separator when reading from standard input.
+`--separator` or `-s` sets a different tag vector separator when reading from standard input.
 
 #### Example
 
@@ -365,9 +378,33 @@ fancy
 fancy-something
 ```
 
+### root-version
+
+`--root-version` or `-r` overrides the root tag vector's version of the given Dockerfile.
+It is available in the `from file` commands.
+
+#### Example
+
+```bash
+tuplip build from file Dockerfile -f golang,docker,master -r 1.1.1 -m -i
+```
+
+#### Pushed Tags
+
+```bash
+docker-golang-master
+docker-golang1.11.4-master
+docker18.9.0-golang-master
+docker18.9.0-golang1.11.4-master
+1.1.1-docker-golang-master
+1.1.1-docker18.9.0-golang1.11.4-master
+1.1.1-docker18.9.0-golang-master
+1.1.1-docker-golang1.11.4-master
+```
+
 ### straight
 
-`--straight` lets tuplip use the input tags directly without any mixing.
+`--straight` or `-s` lets tuplip use the input tags directly without any mixing.
 It is available in the `tag` and `push` commands.
 
 #### Example
@@ -387,7 +424,7 @@ Notice that there is no `foo-goo` present since the given arguments are no tag v
 
 ### filter
 
-`--filter` excludes all tags without the given set of tag vectors from the output set.
+`--filter` or `-f` excludes all tags without the given set of tag vectors from the output set.
 
 #### Example
 
@@ -408,7 +445,7 @@ one-three-two0.1
 
 ### verbose
 
-`--verbose` enables descriptive logging to the stderr.
+`--verbose` or `-v` enables descriptive logging to the stderr.
 Nevertheless, stdout will only receive the output tags to ensure a strict separation that
 doesn't hinder any post-processing.
 

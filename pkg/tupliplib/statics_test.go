@@ -402,7 +402,6 @@ func Test_markRootInstruction(t *testing.T) {
 	tests := []struct {
 		name           string
 		args           args
-		wantMarked     []string
 		wantRepository string
 		wantErr        bool
 	}{
@@ -411,18 +410,20 @@ func Test_markRootInstruction(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "Missing FROM",
+			name:    "Missing Vectors",
 			wantErr: true,
 			args:    args{lines: []string{"", "ARG", "NOFROM"}},
 		},
 		{
-			name:           "Simple Unary",
-			args:           args{lines: []string{"FROM gofunky/docker:1.2.3 as goo"}},
-			wantMarked:     []string{"FROM _:1.2.3"},
+			name: "Only ARGs",
+			args: args{lines: []string{
+				"ARG REPOSITORY=gofunky/docker",
+				"ARG VERSION=1.2.3",
+			}},
 			wantRepository: "gofunky/docker",
 		},
 		{
-			name: "Simple Binary",
+			name: "Only FROMs",
 			args: args{
 				lines: []string{
 					"FROM scratch as master",
@@ -430,52 +431,18 @@ func Test_markRootInstruction(t *testing.T) {
 					"FROM gofunky/docker:1.2.3 as goo",
 				},
 			},
-			wantMarked: []string{
-				"FROM scratch as master",
-				"ARG Other",
-				"FROM _:1.2.3",
-			},
-			wantRepository: "gofunky/docker",
-		},
-		{
-			name: "Unary Scratch Root",
-			args: args{
-				lines: []string{
-					"FROM scratch as master",
-				},
-			},
-			wantMarked:     []string{""},
-			wantRepository: "scratch",
-		},
-		{
-			name: "Binary Scratch Root",
-			args: args{
-				lines: []string{
-					"ARG Other",
-					"FROM gofunky/docker:1.2.3 as goo",
-					"FROM scratch as master",
-				},
-			},
-			wantMarked: []string{
-				"ARG Other",
-				"FROM gofunky/docker:1.2.3 as goo",
-				"",
-			},
-			wantRepository: "scratch",
+			wantRepository: "",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotMarked, gotRepository, err := markRootInstruction(tt.args.lines)
+			gotRepository, err := findRepository(tt.args.lines)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("markRootInstruction() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("findRepository() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(gotMarked, tt.wantMarked) {
-				t.Errorf("markRootInstruction() gotMarked = %v, want %v", gotMarked, tt.wantMarked)
-			}
 			if gotRepository != tt.wantRepository {
-				t.Errorf("markRootInstruction() gotRepository = %v, want %v", gotRepository, tt.wantRepository)
+				t.Errorf("findRepository() gotRepository = %v, want %v", gotRepository, tt.wantRepository)
 			}
 		})
 	}
@@ -488,47 +455,67 @@ func Test_toTagVector(t *testing.T) {
 	tests := []struct {
 		name       string
 		args       args
-		wantVector string
+		wantVector []string
 	}{
 		{
-			name:       "Unary Repo",
+			name:       "Scratch Repo",
 			args:       args{"FROM scratch"},
-			wantVector: "scratch",
+			wantVector: []string{},
+		},
+		{
+			name:       "Unary Repo",
+			args:       args{"FROM docker"},
+			wantVector: []string{"docker"},
 		},
 		{
 			name:       "Binary Repo",
 			args:       args{"FROM gofunky/git"},
-			wantVector: "git",
+			wantVector: []string{"git"},
 		},
 		{
 			name:       "Unary Repo With Alias",
 			args:       args{"FROM scratch as goo"},
-			wantVector: "goo",
+			wantVector: []string{"goo"},
 		},
 		{
 			name:       "Binary Repo With Alias",
 			args:       args{"FROM gofunky/git as goo"},
-			wantVector: "goo",
+			wantVector: []string{"git"},
 		},
 		{
 			name:       "Binary Repo With Alias And Version",
 			args:       args{"FROM gofunky/git:1.2.3 as goo"},
-			wantVector: "goo:1.2.3",
+			wantVector: []string{"git:1.2.3"},
 		},
 		{
 			name:       "Binary Repo With Version",
 			args:       args{"FROM gofunky/git:1.2.3"},
-			wantVector: "git:1.2.3",
+			wantVector: []string{"git:1.2.3"},
 		},
 		{
 			name:       "Wildcard Repo With Version",
 			args:       args{"FROM _:1.2.3"},
-			wantVector: "_:1.2.3",
+			wantVector: []string{"_:1.2.3"},
+		},
+		{
+			name:       "Scratch Repo With Version",
+			args:       args{"FROM scratch:1.2.3"},
+			wantVector: []string{"scratch:1.2.3"},
+		},
+		{
+			name:       "Scratch Repo With Version And Alias",
+			args:       args{"FROM scratch:1.2.3 as foo"},
+			wantVector: []string{"foo:1.2.3"},
+		},
+		{
+			name:       "Multiple Vectors per Instruction",
+			args:       args{"FROM gofunky/golang:1.11.0-alpine3.8 as builder"},
+			wantVector: []string{"golang:1.11.0", "alpine:3.8"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotVector := toTagVector(tt.args.inst); gotVector != tt.wantVector {
+			if gotVector := toTagVector(tt.args.inst); !reflect.DeepEqual(gotVector, tt.wantVector) {
 				t.Errorf("toTagVector() = %v, want %v", gotVector, tt.wantVector)
 			}
 		})

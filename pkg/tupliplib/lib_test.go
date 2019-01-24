@@ -227,7 +227,7 @@ func TestTuplipStream_BuildFromFile(t *testing.T) {
 				expectedSet.Add(line)
 			}
 		}
-		tuplipSrc, err := new(Tuplip).FromFile("../../test/Dockerfile")
+		tuplipSrc, err := new(Tuplip).FromFile("../../test/Dockerfile", "")
 		if err != nil {
 			t.Errorf("Tuplip.Build() error = %v", err)
 			return

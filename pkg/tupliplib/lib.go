@@ -55,7 +55,8 @@ func (t *Tuplip) FromSlice(src []string) *TuplipSource {
 }
 
 // FromFile builds a tuplip source from a Dockerfile.
-func (t *Tuplip) FromFile(src string) (source *TuplipSource, err error) {
+// If overrideVersion is non-empty, it overrides the VERSION ARG in the given Dockerfile.
+func (t *Tuplip) FromFile(src string, overrideVersion string) (source *TuplipSource, err error) {
 	if src == "" {
 		src = Dockerfile
 	}
@@ -70,17 +71,21 @@ func (t *Tuplip) FromFile(src string) (source *TuplipSource, err error) {
 	if err != nil {
 		return nil, err
 	}
-	lines := strings.Split(string(content), "\n")
-	if markedLines, repository, err := markRootInstruction(lines); err != nil {
-		return nil, err
-	} else {
-		stm := stream.New(emitters.Slice(markedLines))
-		stm.Filter(nonEmpty)
-		stm.Filter(fromInstruction)
-		stm.Map(toTagVector)
-		source = &TuplipSource{tuplip: t, stream: stm, Repository: repository}
-		return source, nil
+	var lines = strings.Split(string(content), "\n")
+	if overrideVersion != "" {
+		lines = append(lines, WildcardInstruction+overrideVersion)
 	}
+	repository, err := findRepository(lines)
+	if err != nil {
+		return nil, err
+	}
+	stm := stream.New(emitters.Slice(lines))
+	stm.Filter(nonEmpty)
+	stm.Map(transformRootVersion(overrideVersion != ""))
+	stm.Filter(hasPrefix(DockerFromInstruction))
+	stm.FlatMap(toTagVector)
+	source = &TuplipSource{tuplip: t, stream: stm, Repository: repository}
+	return source, nil
 }
 
 // Build defines a tuplip stream that builds a complete set of Docker tags. The returned stream has no configured sink.
@@ -98,6 +103,15 @@ func (s *TuplipSource) Build(requireSemver bool) (stream *stream.Stream) {
 	stream.FlatMap(failOnEmpty)
 	stream.Filter(s.tuplip.withFilter)
 	stream.FlatMap(s.tuplip.join)
+	stream.Filter(nonEmpty)
+	return
+}
+
+// Straight defines a tuplip stream that maps the input tag vectors straightly as output tags.
+func (s *TuplipSource) Straight() (stream *stream.Stream) {
+	logger.Info("straight channel enabled")
+	stream = s.stream
+	stream.Map(withoutWildcard)
 	stream.Filter(nonEmpty)
 	return
 }

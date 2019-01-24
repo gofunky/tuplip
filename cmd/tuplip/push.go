@@ -23,7 +23,9 @@ func (s pushCmd) run(src *tupliplib.TuplipSource) (stream *stream.Stream, err er
 	if repo != "" {
 		src.Repository = repo
 	}
-	if !s.processingFlags.Straight {
+	if s.processingFlags.Straight {
+		stream = src.Straight()
+	} else {
 		stream = src.Build(s.CheckSemver)
 	}
 	if sourceTag := s.sourceTagOption.SourceTag.SourceTag; sourceTag != "" {

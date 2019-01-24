@@ -16,7 +16,9 @@ func (s tagCmd) run(src *tupliplib.TuplipSource) (stream *stream.Stream, err err
 	if r := s.sourceTagOption.SourceTag.To.Repository.Repository; r != "" {
 		src.Repository = r
 	}
-	if !s.processingFlags.Straight {
+	if s.processingFlags.Straight {
+		stream = src.Straight()
+	} else {
 		stream = src.Build(s.CheckSemver)
 	}
 	stream, err = src.Tag(s.sourceTagOption.SourceTag.SourceTag)

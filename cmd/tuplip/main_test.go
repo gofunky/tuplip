@@ -19,8 +19,9 @@ func TestBuild(t *testing.T) {
 		"tag": {
 			args: []string{"-s"},
 			stdErr: map[string]bool{
-				"queueing build": false,
-				"foo-goo":        false,
+				"queueing build":           false,
+				"foo-goo":                  false,
+				"straight channel enabled": true,
 			},
 		},
 		"push": {
@@ -33,9 +34,20 @@ func TestBuild(t *testing.T) {
 		"build": {
 			args: []string{"--filter=foo"},
 			stdOut: map[string]bool{
-				"goo":     false,
-				"foo":     true,
-				"foo-goo": true,
+				"goo":                false,
+				"foo":                true,
+				"foo-goo":            true,
+				"2.4":                false,
+				"gofunky/ignore:2.4": false,
+			},
+		},
+		"file": {
+			args: []string{"-r 6.3.8"},
+			stdOut: map[string]bool{
+				"2.4":                  false,
+				"6.3.8":                true,
+				"gofunky/ignore:2.4":   false,
+				"gofunky/ignore:6.3.8": true,
 			},
 		},
 	}
@@ -45,6 +57,10 @@ func TestBuild(t *testing.T) {
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile": true,
 				"queueing build":                true,
+			},
+			stdOut: map[string]bool{
+				"2.4":   true,
+				"6.3.8": false,
 			},
 		},
 		{
@@ -78,7 +94,7 @@ func TestBuild(t *testing.T) {
 				"queueing read from Dockerfile": true,
 				"queueing find":                 true,
 				"fetching tags":                 true,
-				"gofunky/docker":                true,
+				"gofunky/ignore":                true,
 			},
 			wantErr: true,
 		},
@@ -109,7 +125,12 @@ func TestBuild(t *testing.T) {
 				"queueing build":                true,
 				"queueing tagging":              true,
 				"tagged":                        true,
-				"docker tag source gofunky/docker:master": true,
+				"docker tag source gofunky/ignore:master": true,
+				"straight channel enabled":                false,
+			},
+			stdOut: map[string]bool{
+				"2.4":   true,
+				"6.3.8": false,
 			},
 		},
 		{
@@ -130,6 +151,11 @@ func TestBuild(t *testing.T) {
 				"queueing tagging":                      true,
 				"tagged":                                true,
 				"docker tag source gofunky/repo:master": true,
+				"straight channel enabled":              false,
+			},
+			stdOut: map[string]bool{
+				"2.4":   true,
+				"6.3.8": false,
 			},
 		},
 		{
@@ -148,9 +174,13 @@ func TestBuild(t *testing.T) {
 				"queueing read from Dockerfile":     true,
 				"queueing build":                    true,
 				"queueing push":                     true,
-				"docker push gofunky/docker:master": true,
+				"docker push gofunky/ignore:master": true,
 				"tagged":                            false,
 				"docker tag":                        false,
+			},
+			stdOut: map[string]bool{
+				"gofunky/ignore:2.4":   true,
+				"gofunky/ignore:6.3.8": false,
 			},
 		},
 		{
@@ -195,8 +225,8 @@ func TestBuild(t *testing.T) {
 				"queueing build":                          true,
 				"queueing tagging":                        true,
 				"queueing push":                           true,
-				"docker tag source gofunky/docker:master": true,
-				"docker push gofunky/docker:master":       true,
+				"docker tag source gofunky/ignore:master": true,
+				"docker push gofunky/ignore:master":       true,
 			},
 		},
 		{
