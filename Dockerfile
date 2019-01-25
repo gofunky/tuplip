@@ -1,4 +1,4 @@
-FROM gofunky/golang:1.11.0-alpine3.8 as builder
+FROM gofunky/golang:1.11.0 as builder
 
 COPY . $GOPATH/src/github.com/gofunky/tuplip
 WORKDIR $GOPATH/src/github.com/gofunky/tuplip/
@@ -13,7 +13,7 @@ RUN go get -v github.com/ahmetb/govvv
 RUN govvv build -v -o /go/bin/tuplip ./cmd/tuplip
 RUN go test -v ./...
 
-FROM gofunky/git:2.18.1
+FROM docker:18.09.1-git
 LABEL maintainer="mat@fax.fyi"
 
 COPY --from=builder /go/bin/tuplip /usr/local/bin/tuplip
