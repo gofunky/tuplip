@@ -54,7 +54,7 @@ const (
 	ArgEquation = "="
 
 	// DockerAs is the alias in FROM instructions in Dockerfiles.
-	DockerAs = "as"
+	DockerAs = Space + "as" + Space
 
 	// VectorSeparator is the default tag vector separator.
 	VectorSeparator = " "

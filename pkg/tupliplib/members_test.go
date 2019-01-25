@@ -2,9 +2,10 @@ package tupliplib
 
 import (
 	"github.com/deckarep/golang-set"
-	"github.com/gofunky/semver"
 	"reflect"
 	"testing"
+
+	"github.com/gofunky/semver"
 )
 
 func TestTuplip_buildTag(t *testing.T) {
@@ -335,6 +336,72 @@ func TestTuplip_join(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotResult := tt.t.join(tt.args.inputSet); !reflect.DeepEqual(gotResult, tt.wantResult) {
 				t.Errorf("Tuplip.join() = %v, want %v", gotResult, tt.wantResult)
+			}
+		})
+	}
+}
+
+func TestTuplip_withFilter(t *testing.T) {
+	type args struct {
+		inputSet mapset.Set
+	}
+	tests := []struct {
+		name string
+		t    Tuplip
+		args args
+		want bool
+	}{
+		{
+			name: "Empty Input Set",
+			t: Tuplip{
+				Filter: []string{"test"},
+			},
+			args: args{mapset.NewSet()},
+			want: false,
+		},
+		{
+			name: "Unary Input Set Without Match",
+			t: Tuplip{
+				Filter: []string{"test"},
+			},
+			args: args{mapset.NewSet(mapset.NewSet("input"))},
+			want: false,
+		},
+		{
+			name: "Unary Input Set With Match",
+			t: Tuplip{
+				Filter: []string{"input"},
+			},
+			args: args{mapset.NewSet(mapset.NewSet("input"))},
+			want: true,
+		},
+		{
+			name: "Binary Input Set Without Match",
+			t: Tuplip{
+				Filter: []string{"test"},
+			},
+			args: args{mapset.NewSet(
+				mapset.NewSet("one"),
+				mapset.NewSet("two"),
+			)},
+			want: false,
+		},
+		{
+			name: "Binary Input Set With Match",
+			t: Tuplip{
+				Filter: []string{"one"},
+			},
+			args: args{mapset.NewSet(
+				mapset.NewSet("one"),
+				mapset.NewSet("two"),
+			)},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.t.withFilter(tt.args.inputSet); got != tt.want {
+				t.Errorf("Tuplip.withFilter() = %v, want %v", got, tt.want)
 			}
 		})
 	}

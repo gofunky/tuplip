@@ -112,7 +112,6 @@ func toTagVector(inst string) (vector []string) {
 	}
 	vector = append(vector, firstVector)
 	if len(parts) > 1 {
-
 		for _, p := range parts[1:] {
 			if strings.ContainsAny(p, VersionChars) {
 				versionIndex := strings.IndexAny(p, VersionChars)

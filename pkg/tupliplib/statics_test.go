@@ -508,9 +508,14 @@ func Test_toTagVector(t *testing.T) {
 			wantVector: []string{"foo:1.2.3"},
 		},
 		{
-			name:       "Multiple Vectors per Instruction",
+			name:       "Two Tag Vectors per Instruction",
 			args:       args{"FROM gofunky/golang:1.11.0-alpine3.8 as builder"},
 			wantVector: []string{"golang:1.11.0", "alpine:3.8"},
+		},
+		{
+			name:       "Multiple Tag Vectors per Instruction",
+			args:       args{"FROM gofunky/golang:1.11.0-alpine3.8-master"},
+			wantVector: []string{"golang:1.11.0", "alpine:3.8", "master"},
 		},
 	}
 	for _, tt := range tests {
