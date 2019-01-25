@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+docker run --privileged \
+  -v $(pwd):/src \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  gofunky/tuplip \
+  push ${IMAGE_NAME} \
+  to ${DOCKER_REPO} \
+  from file ./Dockerfile \
+  --root-version ${IMAGE_NAME} \
+  --verbose --exclude-major
