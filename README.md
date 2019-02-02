@@ -26,7 +26,13 @@ tuplip generates and checks Docker tags in a transparent and convention-forming 
 
 ## Installation
 
-### Using `go get`
+### Get the binary
+
+```bash
+go get -u github.com/gofunky/tuplip/cmd/tuplip
+```
+
+### Get the library
 
 ```bash
 go get -u github.com/gofunky/tuplip
@@ -44,6 +50,12 @@ docker pull gofunky/tuplip
 
 ```bash
 echo "dep _:1.0.0" | tuplip build from stdin
+```
+
+### Using the library
+
+```golang
+import "github.com/gofunky/tuplip/pkg/tupliplib"
 ```
 
 ### Using Docker
