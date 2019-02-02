@@ -115,7 +115,7 @@ docker run --rm -i gofunky/tuplip build from dep _:1.0.0
 
 ## Commands
 
-![Command Graph](./images/command-graph.svg)
+![Command Graph](./assets/img/command-graph.svg)
 
 ### build
 
