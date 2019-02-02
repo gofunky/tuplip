@@ -3,8 +3,8 @@ package tupliplib
 import (
 	"errors"
 	"fmt"
-	"github.com/deckarep/golang-set"
 	"github.com/go-ozzo/ozzo-validation"
+	"github.com/gofunky/pyraset/v2"
 	"github.com/gofunky/semver"
 	"github.com/nokia/docker-registry-client/registry"
 	"os/exec"
@@ -73,26 +73,35 @@ func (t Tuplip) buildVersionSet(withBase bool, alias string, versionArity int, v
 // splitVersion takes a parsed semantic version string, builds a semantic version object and generates all possible
 // shortened version strings from it.
 // requireSemver enables semantic version checks. Short versions are not allowed then.
+// If semantic version checks are not enabled, the latest tag is passed through for root tag vectors
+// or replaced by the alias for dependency vectors.
 func (t Tuplip) splitVersion(requireSemver bool) func(inputTag string) (result mapset.Set, err error) {
 	return func(inputTag string) (result mapset.Set, err error) {
 		if strings.Contains(inputTag, VersionSeparator) {
 			dependency := strings.SplitN(inputTag, VersionSeparator, 2)
-			dependencyAlias := dependency[0]
-			var dependencyVersionText = dependency[1]
+			dependencyAlias := strings.TrimSpace(dependency[0])
+			var dependencyVersionText = strings.TrimSpace(dependency[1])
+			withBase := dependencyAlias != WildcardDependency
 			versionArity := strings.Count(dependencyVersionText, VersionDot) + 1
 			var dependencyVersion semver.Version
 			if requireSemver {
 				dependencyVersion, err = semver.Parse(dependencyVersionText)
 			} else {
+				if dependencyVersionText == DockerLatestTag {
+					if withBase {
+						return mapset.NewSet(dependencyAlias), nil
+					} else {
+						return mapset.NewSet(DockerLatestTag), nil
+					}
+				}
 				dependencyVersion, err = semver.ParseTolerant(dependencyVersionText)
 			}
 			if err != nil {
 				return
 			}
-			withBase := dependencyAlias != WildcardDependency
 			return t.buildVersionSet(withBase, dependencyAlias, versionArity, dependencyVersion)
 		} else {
-			return mapset.NewSetWith(inputTag), nil
+			return mapset.NewSet(inputTag), nil
 		}
 	}
 }
@@ -139,10 +148,18 @@ func (t Tuplip) join(inputSet mapset.Set) (result mapset.Set) {
 	return result
 }
 
-// addLatestTag adds an additional latest tag if requested in *Tuplip.
+// addLatestTag adds an additional 'latest' tag if *TuplipSource.AddLatest is true.
+// If the tag vectors contain a 'latest' root version, the output is replaced with 'latest' only.
 func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
+	latestSet := mapset.NewSet(mapset.NewSet(DockerLatestTag))
+	if t.ExclusiveLatest {
+		if inputSet.Contains(latestSet) {
+			logger.Info("exclusive latest tag was found")
+			return mapset.NewSet(mapset.NewSet(), latestSet)
+		}
+	}
 	if t.AddLatest {
-		inputSet.Add(mapset.NewSet(mapset.NewSet("latest")))
+		inputSet.Add(latestSet)
 	}
 	return inputSet
 }
@@ -150,14 +167,7 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 // withFilter excludes all tags without the given set of tag vectors from the output set.
 func (t Tuplip) withFilter(inputSet mapset.Set) bool {
 	for _, filterVector := range t.Filter {
-		var contains bool
-		inputSet.Each(func(i interface{}) bool {
-			if i.(mapset.Set).Contains(filterVector) {
-				contains = true
-			}
-			return contains
-		})
-		if !contains {
+		if !inputSet.Contains(mapset.NewSet(filterVector)) {
 			logger.InfoWith("filtering tag since the required filter vector is missing").
 				String("tag", inputSet.String()).
 				String("filter vector", filterVector).

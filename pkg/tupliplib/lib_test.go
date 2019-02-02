@@ -2,7 +2,7 @@ package tupliplib
 
 import (
 	"bufio"
-	"github.com/deckarep/golang-set"
+	"github.com/gofunky/pyraset/v2"
 	"os"
 	"path/filepath"
 	"strings"
@@ -113,6 +113,24 @@ func TestTuplipStream(t *testing.T) {
 			buildArgs: &args{input: []string{" _:2.0 foo"}, requireSemver: true},
 			wantErr:   true,
 		},
+		{
+			name:      "Simple Binary Tag With Exclusive Latest Enabled",
+			buildArgs: &args{input: []string{"alias", "foo"}},
+			want:      []string{"alias", "foo", "alias-foo"},
+			t:         Tuplip{ExclusiveLatest: true},
+		},
+		{
+			name:      "Invalid Latest Version With Semver Required",
+			buildArgs: &args{input: []string{"_:latest"}, requireSemver: true},
+			t:         Tuplip{ExclusiveLatest: true},
+			wantErr:   true,
+		},
+		{
+			name:      "Exclusive Latest Version",
+			buildArgs: &args{input: []string{"_:latest", "foo"}},
+			t:         Tuplip{ExclusiveLatest: true},
+			want:      []string{"latest"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name+"_BuildFromReader", func(t *testing.T) {
@@ -131,7 +149,7 @@ func TestTuplipStream(t *testing.T) {
 			case <-time.After(500 * time.Millisecond):
 				t.Fatal("Waited too long ...")
 			}
-			gotOutput := mapset.NewSetFromSlice(buildCollector.Get())
+			gotOutput := mapset.NewSet(buildCollector.Get()...)
 			wantSet := mapset.NewSet()
 			for _, w := range tt.want {
 				wantSet.Add(w)
@@ -164,7 +182,7 @@ func TestTuplipStream(t *testing.T) {
 			case <-time.After(500 * time.Millisecond):
 				t.Fatal("Waited too long ...")
 			}
-			gotTagOutput := mapset.NewSetFromSlice(tagCollector.Get())
+			gotTagOutput := mapset.NewSet(tagCollector.Get()...)
 			wantTagOutput := mapset.NewSet()
 			for _, w := range tt.want {
 				wantTagOutput.Add(w)
@@ -234,7 +252,7 @@ func TestTuplipStream_FindFromReader(t *testing.T) {
 				t.Errorf("Tuplip.Open() error = %v, wantErr %v", gotErr, tt.wantErr)
 				return
 			}
-			gotOutput := mapset.NewSetFromSlice(collector.Get())
+			gotOutput := mapset.NewSet(collector.Get()...)
 			wantSet := mapset.NewSet(tt.want)
 			if !tt.wantErr && !gotOutput.Equal(wantSet) {
 				t.Errorf("Tuplip.Open() = %v, want %v, difference %v",
@@ -281,7 +299,7 @@ func TestTuplipStream_BuildFromFile(t *testing.T) {
 		case <-time.After(500 * time.Millisecond):
 			t.Fatal("Waited too long ...")
 		}
-		gotOutput := mapset.NewSetFromSlice(collector.Get())
+		gotOutput := mapset.NewSet(collector.Get()...)
 		if !gotOutput.Equal(expectedSet) {
 			t.Errorf("Tuplip.Build() = %v,\nwant %v,\ndifference %v",
 				gotOutput, expectedSet, gotOutput.Difference(expectedSet))
@@ -342,7 +360,7 @@ func TestTuplipStream_PushStraightFromSlice(t *testing.T) {
 			case <-time.After(500 * time.Millisecond):
 				t.Fatal("Waited too long ...")
 			}
-			gotTagOutput := mapset.NewSetFromSlice(tagCollector.Get())
+			gotTagOutput := mapset.NewSet(tagCollector.Get()...)
 			wantTagOutput := mapset.NewSet()
 			for _, w := range tt.want {
 				wantTagOutput.Add(w)

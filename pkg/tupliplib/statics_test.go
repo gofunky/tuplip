@@ -1,8 +1,8 @@
 package tupliplib
 
 import (
-	"github.com/deckarep/golang-set"
-	"reflect"
+	"github.com/gofunky/pyraset/v2"
+	"github.com/google/go-cmp/cmp"
 	"testing"
 )
 
@@ -47,22 +47,22 @@ func TestTuplip_packInSet(t *testing.T) {
 		{
 			name:       "Empty Set",
 			args:       args{mapset.NewSet()},
-			wantResult: mapset.NewSetWith(mapset.NewSet()),
+			wantResult: mapset.NewSet(mapset.NewSet()),
 		},
 		{
 			name:       "Unary Set",
 			args:       args{mapset.NewSet("foo")},
-			wantResult: mapset.NewSetWith(mapset.NewSet("foo")),
+			wantResult: mapset.NewSet(mapset.NewSet("foo")),
 		},
 		{
 			name:       "Tuple Set",
 			args:       args{mapset.NewSet("foo", "boo")},
-			wantResult: mapset.NewSetWith(mapset.NewSet("foo", "boo")),
+			wantResult: mapset.NewSet(mapset.NewSet("foo", "boo")),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotResult := packInSet(tt.args.subSet); !reflect.DeepEqual(gotResult.ToSlice(),
+			if gotResult := packInSet(tt.args.subSet); !cmp.Equal(gotResult.ToSlice(),
 				tt.wantResult.ToSlice()) {
 				t.Errorf("Tuplip.packInSet() = %v, want %v", gotResult, tt.wantResult)
 			}
@@ -98,7 +98,7 @@ func TestTuplip_mergeSets(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotResult := mergeSets(tt.args.left, tt.args.right); !reflect.DeepEqual(gotResult, tt.wantResult) {
+			if gotResult := mergeSets(tt.args.left, tt.args.right); !cmp.Equal(gotResult, tt.wantResult) {
 				t.Errorf("Tuplip.mergeSets() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})
@@ -192,7 +192,7 @@ func TestTuplip_failOnEmpty(t *testing.T) {
 				t.Errorf("Tuplip.failOnEmpty() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !cmp.Equal(got, tt.want) {
 				t.Errorf("Tuplip.failOnEmpty() = %v, want %v", got, tt.want)
 			}
 		})
@@ -271,7 +271,7 @@ func Test_removeCommon(t *testing.T) {
 				t.Errorf("Tuplip.failOnEmpty() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !cmp.Equal(got, tt.want) {
 				t.Errorf("removeCommon() = %v, want %v", got, tt.want)
 			}
 		})
@@ -520,7 +520,7 @@ func Test_toTagVector(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotVector := toTagVector(tt.args.inst); !reflect.DeepEqual(gotVector, tt.wantVector) {
+			if gotVector := toTagVector(tt.args.inst); !cmp.Equal(gotVector, tt.wantVector) {
 				t.Errorf("toTagVector() = %v, want %v", gotVector, tt.wantVector)
 			}
 		})

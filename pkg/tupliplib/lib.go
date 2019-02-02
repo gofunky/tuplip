@@ -1,9 +1,9 @@
 package tupliplib
 
 import (
-	"github.com/deckarep/golang-set"
 	"github.com/gofunky/automi/emitters"
 	"github.com/gofunky/automi/stream"
+	"github.com/gofunky/pyraset/v2"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -18,12 +18,15 @@ type Tuplip struct {
 	ExcludeMinor bool `short:"i" help:"excludes the minor versions from the considered version variants"`
 	// ExcludeBase excludes the base alias without version suffix from the considered version variants.
 	ExcludeBase bool `short:"b" help:"excludes the base alias without version suffix from the considered version variants"`
-	// AddLatest adds an additional 'latest' tag to the result set.
-	AddLatest bool `short:"l" help:"adds an additional 'latest' tag to the result set"`
 	// Filter excludes all tags without the given set of tag vectors from the output set.
 	Filter []string `short:"f" help:"excludes all tags without the given set of tag vectors from the output set"`
 	// Simulate prevents the execution of any Docker commands.
 	Simulate bool `hidden:""`
+	// AddLatest adds an additional 'latest' tag to the result set.
+	AddLatest bool `short:"l" help:"adds an additional 'latest' root tag to the result set"`
+	// ExclusiveLatest makes the `latest` tag vector version an exclusive tag if given.
+	// Then, the output will only contain `latest` if the input contains `latest` as root tag vector version.
+	ExclusiveLatest bool `short:"e" help:"make the 'latest' root tag vector version an exclusive tag if given"`
 }
 
 // TuplipSource is the intermediary-built Tuplip stream containing only the source parsing steps.

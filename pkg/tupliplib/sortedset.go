@@ -1,6 +1,6 @@
 package tupliplib
 
-import "github.com/deckarep/golang-set"
+import "github.com/gofunky/pyraset/v2"
 
 // SortedSet is a a slice of map sets to make them sortable.
 // It will be sorted alphabetically by the string representations of the subsets.

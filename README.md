@@ -360,6 +360,23 @@ tuplip build from _:1.2.3 --add-latest
 latest
 ```
 
+### exclusive-latest
+
+`--exclusive-latest` or `-e` makes the `latest` root tag vector version an exclusive tag if given.
+This is especially useful for automated builds (e.g., Docker Hub builds) where the root tag vector version is passed from the build system.
+
+#### Example
+
+```bash
+tuplip build from _:latest alias:1.2.3 --exclusive-latest
+```
+
+#### Result
+
+```bash
+latest
+```
+
 ### separator
 
 `--separator` or `-s` sets a different tag vector separator when reading from standard input.

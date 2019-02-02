@@ -3,7 +3,7 @@ package tupliplib
 import (
 	"errors"
 	"fmt"
-	"github.com/deckarep/golang-set"
+	"github.com/gofunky/pyraset/v2"
 	"math"
 	"sort"
 	"strings"
@@ -11,7 +11,7 @@ import (
 
 // packInSet packs a set as subset into a new set.
 func packInSet(subSet mapset.Set) (result mapset.Set) {
-	return mapset.NewSetWith(subSet)
+	return mapset.NewSet(subSet)
 }
 
 // mergeSets merges the second given set into the first one.

@@ -3,15 +3,15 @@ module github.com/gofunky/tuplip
 require (
 	github.com/alecthomas/kong v0.1.16-0.20190121131426-2a90ca2ad300
 	github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf // indirect
-	github.com/cweill/gotests v1.5.2 // indirect
-	github.com/deckarep/golang-set v1.7.1
 	github.com/docker/distribution v2.7.0+incompatible // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
 	github.com/emicklei/dot v0.9.1-0.20190122094014-55d3f7ff1061
 	github.com/francoispqt/onelog v0.0.0-20181228065221-f24ed9c6639d
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
-	github.com/gofunky/automi v0.3.3
+	github.com/gofunky/automi v0.3.4
+	github.com/gofunky/pyraset/v2 v2.0.2
 	github.com/gofunky/semver v3.5.2+incompatible
+	github.com/google/go-cmp v0.2.0
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
@@ -23,5 +23,4 @@ require (
 	github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f
 	github.com/sirupsen/logrus v1.3.0 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/tools v0.0.0-20190124215303-cc6a436ffe6b // indirect
 )

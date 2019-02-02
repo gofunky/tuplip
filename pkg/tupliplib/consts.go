@@ -41,6 +41,9 @@ const (
 	// DockerScratch is the empty Docker base image alias.
 	DockerScratch = "scratch"
 
+	// DockerLatestTag depicts the 'latest' tag.
+	DockerLatestTag = "latest"
+
 	// ScratchInstruction is a simple Docker FROM instruction using scratch only.
 	ScratchInstruction = DockerFromInstruction + Space + DockerScratch
 

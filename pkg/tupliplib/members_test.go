@@ -1,8 +1,8 @@
 package tupliplib
 
 import (
-	"github.com/deckarep/golang-set"
-	"reflect"
+	"github.com/gofunky/pyraset/v2"
+	"github.com/google/go-cmp/cmp"
 	"testing"
 
 	"github.com/gofunky/semver"
@@ -160,7 +160,7 @@ func TestTuplip_parseVersions(t *testing.T) {
 			for _, e := range tt.wantResult {
 				wantSet.Add(e)
 			}
-			if !reflect.DeepEqual(gotResult, wantSet) {
+			if !cmp.Equal(gotResult, wantSet) {
 				t.Errorf("Tuplip.buildVersionSet() = %v, want %v", gotResult, wantSet)
 			}
 		})
@@ -229,10 +229,25 @@ func TestTuplip_splitVersion(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "Latest Root Version",
+			args: args{
+				inputTag: "_:latest",
+			},
+			wantResult: []string{"latest"},
+		},
+		{
+			name: "Latest Alias Version",
+			args: args{
+				inputTag: "alias:latest",
+			},
+			wantResult: []string{"alias"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotResult, err := tt.t.splitVersion(tt.args.requireSemver)(tt.args.inputTag)
+			s := &TuplipSource{tuplip: &tt.t}
+			gotResult, err := s.tuplip.splitVersion(tt.args.requireSemver)(tt.args.inputTag)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tuplip.splitVersion() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -242,7 +257,7 @@ func TestTuplip_splitVersion(t *testing.T) {
 				for _, e := range tt.wantResult {
 					wantSet.Add(e)
 				}
-				if !reflect.DeepEqual(gotResult, wantSet) {
+				if !cmp.Equal(gotResult, wantSet) {
 					t.Errorf("Tuplip.splitVersion() = %v, want %v", gotResult, wantSet)
 				}
 			}
@@ -284,7 +299,7 @@ func TestTuplip_splitBySeparator(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotResult := tt.t.splitBySeparator(tt.args.sep)(tt.args.input); !reflect.DeepEqual(gotResult, tt.wantResult) {
+			if gotResult := tt.t.splitBySeparator(tt.args.sep)(tt.args.input); !cmp.Equal(gotResult, tt.wantResult) {
 				t.Errorf("Tuplip.splitBySeparator() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})
@@ -334,7 +349,7 @@ func TestTuplip_join(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotResult := tt.t.join(tt.args.inputSet); !reflect.DeepEqual(gotResult, tt.wantResult) {
+			if gotResult := tt.t.join(tt.args.inputSet); !cmp.Equal(gotResult, tt.wantResult) {
 				t.Errorf("Tuplip.join() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})

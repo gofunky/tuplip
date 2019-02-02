@@ -39,6 +39,7 @@ func TestBuild(t *testing.T) {
 				"foo-goo":            true,
 				"2.4":                false,
 				"gofunky/ignore:2.4": false,
+				"latest":             false,
 			},
 		},
 		"file": {
@@ -48,6 +49,10 @@ func TestBuild(t *testing.T) {
 				"6.3.8":                true,
 				"gofunky/ignore:2.4":   false,
 				"gofunky/ignore:6.3.8": true,
+				"latest":               false,
+			},
+			stdErr: map[string]bool{
+				"exclusive latest tag was found": false,
 			},
 		},
 	}
@@ -61,6 +66,18 @@ func TestBuild(t *testing.T) {
 			stdOut: map[string]bool{
 				"2.4":   true,
 				"6.3.8": false,
+			},
+		},
+		{
+			args: []string{"build", "from", "file", "../../test/Dockerfile", "--root-version=latest", "-e"},
+			stdOut: map[string]bool{
+				"2.4":    false,
+				"latest": true,
+			},
+			stdErr: map[string]bool{
+				"queueing read from Dockerfile":  true,
+				"queueing build":                 true,
+				"exclusive latest tag was found": true,
 			},
 		},
 		{
