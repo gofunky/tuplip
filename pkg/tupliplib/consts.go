@@ -45,7 +45,7 @@ const (
 	DockerLatestTag = "latest"
 
 	// IgnoredAliasPrefix depicts the Docker FROM instructions' alias prefix so that the instruction is ignored.
-	IgnoredAliasPrefix = "__"
+	IgnoredAliasPrefix = "i__"
 
 	// ScratchInstruction is a simple Docker FROM instruction using scratch only.
 	ScratchInstruction = DockerFromInstruction + Space + DockerScratch

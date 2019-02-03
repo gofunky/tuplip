@@ -334,7 +334,7 @@ will return the vectors `golang:1.11.0` and `alpine:3.8`.
 
 #### Ignored Instructions
 
-Any `FROM` instructions that use an alias with the prefix `__` (e.g., `__builder`) will be ignored.
+Any `FROM` instructions that use an alias with the prefix `i__` (e.g., `__builder`) will be ignored.
 
 ## Flags
 
