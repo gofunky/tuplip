@@ -95,7 +95,9 @@ func toTagVector(inst string) (vector []string) {
 	}
 	var firstVector string
 	repository, version, alias := splitFromInstruction(inst)
-	if repository == DockerScratch && alias != "" {
+	if strings.HasPrefix(alias, IgnoredAliasPrefix) {
+		return
+	} else if repository == DockerScratch && alias != "" {
 		firstVector = alias
 	} else {
 		repoParts := strings.SplitN(repository, RepositorySeparator, 2)

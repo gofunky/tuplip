@@ -1,4 +1,4 @@
-FROM gofunky/golang:1.11.0 as builder
+FROM gofunky/golang:1.11.0 as __builder
 
 COPY . $GOPATH/src/github.com/gofunky/tuplip
 WORKDIR $GOPATH/src/github.com/gofunky/tuplip/
@@ -16,7 +16,7 @@ RUN go test -v ./...
 FROM docker:18.09.1-git
 LABEL maintainer="mat@fax.fyi"
 
-COPY --from=builder /go/bin/tuplip /usr/local/bin/tuplip
+COPY --from=__builder /go/bin/tuplip /usr/local/bin/tuplip
 RUN chmod +x /usr/local/bin/tuplip
 
 ENTRYPOINT ["/usr/local/bin/tuplip"]

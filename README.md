@@ -332,6 +332,10 @@ Transitive multi-vector-tagged image dependencies will be interpreted correctly.
 That means, `FROM gofunky/golang:1.11.0-alpine3.8 as builder` for instance,
 will return the vectors `golang:1.11.0` and `alpine:3.8`.
 
+#### Ignored Instructions
+
+Any `FROM` instructions that use an alias with the prefix `__` (e.g., `__builder`) will be ignored.
+
 ## Flags
 
 ### exclude-major
