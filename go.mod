@@ -8,7 +8,7 @@ require (
 	github.com/emicklei/dot v0.9.1-0.20190122094014-55d3f7ff1061
 	github.com/francoispqt/onelog v0.0.0-20181228065221-f24ed9c6639d
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
-	github.com/gofunky/automi v0.3.4
+	github.com/gofunky/automi v0.3.5
 	github.com/gofunky/pyraset/v2 v2.0.2
 	github.com/gofunky/semver v3.5.2+incompatible
 	github.com/google/go-cmp v0.2.0
