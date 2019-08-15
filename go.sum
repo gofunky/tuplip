@@ -19,6 +19,8 @@ github.com/emicklei/dot v0.9.1-0.20190122094014-55d3f7ff1061 h1:BC19lBvITlzFG6tH
 github.com/emicklei/dot v0.9.1-0.20190122094014-55d3f7ff1061/go.mod h1:kZg82Ikwc4pqb31Ct2yb0B7RUqxh3JESIXw2uWSv/xY=
 github.com/emicklei/dot v0.9.2 h1:QE7n6FMotYKA8GaVMgJoYzpgoPUz7ukeZLaxugLhVXc=
 github.com/emicklei/dot v0.9.2/go.mod h1:kZg82Ikwc4pqb31Ct2yb0B7RUqxh3JESIXw2uWSv/xY=
+github.com/emicklei/dot v0.10.1 h1:bkzvwgIhhw/cuxxnJy5/5+ZL3GnhFxFfv0eolHtWE2w=
+github.com/emicklei/dot v0.10.1/go.mod h1:kZg82Ikwc4pqb31Ct2yb0B7RUqxh3JESIXw2uWSv/xY=
 github.com/emirpasic/gods v1.12.0 h1:QAUIPSaCu4G+POclxeqb3F+WPpdKqFGlw36+yOzGlrg=
 github.com/emirpasic/gods v1.12.0/go.mod h1:YfzfFFoVP/catgzJb4IKIqXjX78Ha8FMSDh3ymbK86o=
 github.com/francoispqt/gojay v0.0.0-20181220093123-f2cc13a668ca h1:F2BD6Vhei4w0rtm4eNpzylNsB07CcCbpYA+xlqMx3mA=
