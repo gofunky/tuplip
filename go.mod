@@ -11,7 +11,7 @@ require (
 	github.com/gofunky/automi v0.3.5
 	github.com/gofunky/pyraset/v2 v2.0.3
 	github.com/gofunky/semver v3.5.2+incompatible
-	github.com/google/go-cmp v0.2.0
+	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
