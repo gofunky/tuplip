@@ -2,6 +2,8 @@ github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/OneOfOne/xxhash v1.2.4 h1:HZ+j9jn/+mcsaDSQRZuK00pXWdE25AQLtgm8kZct1Ew=
 github.com/OneOfOne/xxhash v1.2.4/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
+github.com/OneOfOne/xxhash v1.2.6 h1:U68crOE3y3MPttCMQGywZOLrTeF5HHJ3/vDBCJn9/bA=
+github.com/OneOfOne/xxhash v1.2.6/go.mod h1:eZbhyaAYD41SGSSsnmcpxVoRiQ/MPUTjUdIIOT9Um7Q=
 github.com/alecthomas/kong v0.1.16-0.20190121131426-2a90ca2ad300 h1:pziwTi5yEejdVg+vhh+0+BspanZPx7BqnQ4ycDRFXd8=
 github.com/alecthomas/kong v0.1.16-0.20190121131426-2a90ca2ad300/go.mod h1:0m2VYms8rH0qbCqVB2gvGHk74bqLIq0HXjCs5bNbNQU=
 github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf h1:eg0MeVzsP1G42dRafH3vf+al2vQIJU0YHX+1Tw87oco=
@@ -47,6 +49,8 @@ github.com/gofunky/pyraset/v2 v2.0.2 h1:eI2hiJQ8O7L1US5p7rJs1yAkaPJDnSGzh44d6Ye4
 github.com/gofunky/pyraset/v2 v2.0.2/go.mod h1:gKGNa3ukkBmlBHt1PYM3d6MI5UjWJ5Am5CCuzRMSVGY=
 github.com/gofunky/pyraset/v2 v2.0.3 h1:06rDF9pZY4U0JWSPPWOK+xx1PC6eNrjmex/VDBb2IlQ=
 github.com/gofunky/pyraset/v2 v2.0.3/go.mod h1:dA7+3y4BiYKrVBrozg15HToCngFyo0FsImJQwOgfjE8=
+github.com/gofunky/pyraset/v2 v2.0.4 h1:5iqOzJohmZ+cOJEuyQp/TV4fZKbTi00oEt/Ndqlk5eQ=
+github.com/gofunky/pyraset/v2 v2.0.4/go.mod h1:5bfB7g6tc1BOi9i503eRYmqOBFdE+2AMeFpmOYjzyMA=
 github.com/gofunky/semver v3.5.2+incompatible h1:bLtS5NNx0gLpaUJHGRtePWV6vs5Q2cNhatKFqKny5J8=
 github.com/gofunky/semver v3.5.2+incompatible/go.mod h1:7MXgDdC47tqmTJhxqX5CCuJaIx+c5igi9n0xPbKjG0U=
 github.com/google/go-cmp v0.2.0 h1:+dTQ8DZQJz0Mb/HjFlkptS1FeQ4cWSnN941F8aEG4SQ=
