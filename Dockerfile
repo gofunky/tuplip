@@ -1,4 +1,4 @@
-FROM gofunky/golang:1.15 as i__builder
+FROM gofunky/golang:1.15.0 as i__builder
 
 COPY . $GOPATH/src/github.com/gofunky/tuplip
 WORKDIR $GOPATH/src/github.com/gofunky/tuplip/
