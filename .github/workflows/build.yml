@@ -33,7 +33,7 @@ jobs:
           ${{ runner.os }}-go-${{ matrix.go-version }}-
     
     - name: install
-      run: go install ./cmd/tuplip
+      run: go install -mod=readonly ./cmd/tuplip
     
     - name: test
       run: go test -v ./...
