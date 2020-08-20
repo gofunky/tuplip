@@ -1,7 +1,9 @@
 module github.com/gofunky/tuplip
 
+go 1.14
+
 require (
-	github.com/alecthomas/kong v0.1.16-0.20190121131426-2a90ca2ad300
+	github.com/alecthomas/kong v0.1.17
 	github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf // indirect
 	github.com/docker/distribution v2.7.0+incompatible // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
@@ -14,9 +16,7 @@ require (
 	github.com/google/go-cmp v0.5.1
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
-	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/nokia/docker-registry-client v0.0.0-20181128224058-bf401ccb7530
-	github.com/nsf/termbox-go v0.0.0-20190104133558-0938b5187e61 // indirect
 	github.com/oleiade/reflections v1.0.0
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
