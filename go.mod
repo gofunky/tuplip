@@ -9,7 +9,7 @@ require (
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
 	github.com/emicklei/dot v0.11.0
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
-	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
+	github.com/go-ozzo/ozzo-validation/v4 v4.2.2
 	github.com/gofunky/automi v0.3.5
 	github.com/gofunky/pyraset/v2 v2.0.5
 	github.com/gofunky/semver v3.5.2+incompatible
