@@ -165,7 +165,7 @@ The `tuplip find` command not only checks the order, it also finds a suitable ve
 Let's assume we always want the latest git version but we require alpine 3.8.
 
 ```bash
-tuplip find gofunky/git from alpine:3.8
+tuplip find in gofunky/git from alpine:3.8
 ```
 
 Then, the most appropriate image would be: 
@@ -334,7 +334,7 @@ will return the vectors `golang:1.11.0` and `alpine:3.8`.
 
 #### Ignored Instructions
 
-Any `FROM` instructions that use an alias with the prefix `i__` (e.g., `__builder`) will be ignored.
+Any `FROM` instructions that use an alias with the prefix `i__` (e.g., `i__builder`) will be ignored.
 
 ## Flags
 
