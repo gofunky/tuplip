@@ -38,8 +38,8 @@ github.com/gofunky/pyraset/v2 v2.0.5 h1:OoYSCZw2O28jYStxBMjPeOE9F9Y1rJCVa2Zheork
 github.com/gofunky/pyraset/v2 v2.0.5/go.mod h1:G3jLDz/aZqIdsy5Yk8/NANPdL7+ECSvFAr3FldlrwYY=
 github.com/gofunky/semver v3.5.2+incompatible h1:bLtS5NNx0gLpaUJHGRtePWV6vs5Q2cNhatKFqKny5J8=
 github.com/gofunky/semver v3.5.2+incompatible/go.mod h1:7MXgDdC47tqmTJhxqX5CCuJaIx+c5igi9n0xPbKjG0U=
-github.com/google/go-cmp v0.5.1 h1:JFrFEBb2xKufg6XkJsJr+WbKb4FQlURi5RUcBveYu9k=
-github.com/google/go-cmp v0.5.1/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+github.com/google/go-cmp v0.5.2 h1:X2ev0eStA3AbceY54o37/0PQ/UWqKEiiO2dKL5OPaFM=
+github.com/google/go-cmp v0.5.2/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/gorilla/mux v1.7.4 h1:VuZ8uybHlWmqV03+zRzdwKL4tUnIp1MAQtp1mIFE1bc=
 github.com/gorilla/mux v1.7.4/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3 h1:CE8S1cTafDpPvMhIxNJKvHsGVBgn1xWYf1NbHQhywc8=
