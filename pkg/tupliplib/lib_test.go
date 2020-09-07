@@ -262,9 +262,9 @@ func TestTuplipStream_FindFromReader(t *testing.T) {
 	}
 }
 
-func TestTuplipStream_BuildFromFile(t *testing.T) {
+func TestTuplipStream_BuildFromFile_WithoutRepository(t *testing.T) {
 	t.Run("Test Dockerfile", func(t *testing.T) {
-		filePath, err := filepath.Abs("./../../test/tags.txt")
+		filePath, err := filepath.Abs("./../../test/tags_without_repository.txt")
 		if err != nil {
 			panic(err)
 		}
@@ -282,7 +282,52 @@ func TestTuplipStream_BuildFromFile(t *testing.T) {
 				expectedSet.Add(line)
 			}
 		}
-		tuplipSrc, err := new(Tuplip).FromFile("../../test/Dockerfile", "")
+		tuplipSrc, err := new(Tuplip).FromFile("../../test/WithoutRepository.Dockerfile", "")
+		if err != nil {
+			t.Errorf("Tuplip.Build() error = %v", err)
+			return
+		}
+		tStream := tuplipSrc.Build(false)
+		collector := collectors.Slice()
+		tStream.Into(collector)
+		select {
+		case gotErr := <-tStream.Open():
+			if gotErr != nil {
+				t.Errorf("Tuplip.Build() error = %v", gotErr)
+				return
+			}
+		case <-time.After(500 * time.Millisecond):
+			t.Fatal("Waited too long ...")
+		}
+		gotOutput := mapset.NewSet(collector.Get()...)
+		if !gotOutput.Equal(expectedSet) {
+			t.Errorf("Tuplip.Build() = %v,\nwant %v,\ndifference %v",
+				gotOutput, expectedSet, gotOutput.Difference(expectedSet))
+		}
+	})
+}
+
+func TestTuplipStream_BuildFromFile_WithRepository(t *testing.T) {
+	t.Run("Test Dockerfile With Repository", func(t *testing.T) {
+		filePath, err := filepath.Abs("./../../test/tags_with_repository.txt")
+		if err != nil {
+			panic(err)
+		}
+		expectedSet := mapset.NewSet()
+		file, err := os.Open(filePath)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if line != "" {
+				expectedSet.Add(line)
+			}
+		}
+		tuplipSrc, err := new(Tuplip).FromFile("../../test/WithRepository.Dockerfile", "")
 		if err != nil {
 			t.Errorf("Tuplip.Build() error = %v", err)
 			return

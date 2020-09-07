@@ -50,6 +50,30 @@ tuplip generates and checks Docker tags in a transparent and convention-forming 
 
 <!-- tocstop -->
 
+## What tuplip can do for you
+
+tuplip accepts three kinds of tag vectors (i.e., sub elements that define a tag) as the input,
+namely (unversioned) alias vectors, (versioned) dependency vectors, and one (versioned) root vector.
+
+The alias vector does not contain a version and is just passed as it. 
+It can be used to identify a feature or a branch of the Docker image.
+
+The dependency vector depicts the dependencies of the Docker image. All versioned sub layers, binaries, 
+and imports of the image can be depicted with their regarding semantic version variants.
+To let tuplip create all possible tuples for the semantic version of the dependency, 
+pass the tag vector alias colon-separated from the version. For example, 
+use 'alpine:3.8' to create the vector tuple 'alpine', 'alpine3',
+and 'alpine3.8' that are then further combined with the other given input vectors.
+
+Root vectors are similar to the dependency vectors but they don't contain the alias prefix. 
+They are meant to be used for the core product that the Docker images represents. 
+The root vector is always placed in front of the remaining elements. 
+A root vector is defined by setting `_` as the version alias (e.g., as in `_:1.0.0`).
+
+The tag vectors are fetched from the cli standard input by default, either line-separated or separated by the given
+separator argument. Alternatively, in `fromFile`, a Dockerfile can be used instead of the standard input
+to parse its FROM instructions as vectors.
+
 ## Installation
 
 ### Get the binary
@@ -87,7 +111,17 @@ import "github.com/gofunky/tuplip/pkg/tupliplib"
 ### Using Docker
 
 ```bash
-docker run --rm -i gofunky/tuplip build from dep _:1.0.0
+docker run --rm -i gofunky/tuplip build from tag _:1.0
+```
+
+#### Printed Tags
+
+```bash
+tag
+1
+1.0
+1-tag
+1.0-tag
 ```
 
 ## Commands
@@ -97,7 +131,22 @@ docker run --rm -i gofunky/tuplip build from dep _:1.0.0
 ### build
 
 `tuplip build` generates all possible tag representations that a given Docker image should receive.
+A repository can be defined to be prefixed to the tags. Leave the argument out to use it without a repository. 
 By default, all tags are printed line by line to the `stdout`. Errors are printed to the `stderr`.
+
+```bash
+sudo ~/go/bin/tuplip build to gofunky/ignore from tag _:1.0
+```
+
+#### Printed Tags
+
+```bash
+gofunky/ignore:tag
+gofunky/ignore:1
+gofunky/ignore:1.0
+gofunky/ignore:1-tag
+gofunky/ignore:1.0-tag
+```
 
 ### tag
 
@@ -106,20 +155,20 @@ A repository can be defined to be prefixed to the tags. Leave the argument out t
 Docker needs to be installed. If you usually need `sudo` for the docker cli, also use `sudo` for `tuplip`.
 
 ```bash
-sudo ~/go/bin/tuplip tag source-tag matfax/ignore from test _:0.0.1 -l
+sudo ~/go/bin/tuplip tag source-tag to gofunky/ignore from test _:0.0.1 -l
 ```
 
 #### Processed Tags
 
 ```bash
-latest
-test
-0
-0.0
-0.0.1
-0-test
-0.0-test
-0.0.1-test
+gofunky/ignore:latest
+gofunky/ignore:test
+gofunky/ignore:0
+gofunky/ignore:0.0
+gofunky/ignore:0.0.1
+gofunky/ignore:0-test
+gofunky/ignore:0.0-test
+gofunky/ignore:0.0.1-test
 ```
 
 ### push
@@ -131,19 +180,19 @@ Docker needs to be installed. If you usually need `sudo` for the docker cli, als
 You need to be logged in to the Docker Hub for pushes (e.g., by calling `docker login`).
 
 ```bash
-sudo ~/go/bin/tuplip push source-tag matfax/ignore from test _:0.0.2
+sudo ~/go/bin/tuplip push source-tag to gofunky/ignore from test _:0.0.2
 ```
 
 #### Pushed Tags
 
 ```bash
-matfax/ignore:0
-matfax/ignore:0.0
-matfax/ignore:0.0.2
-matfax/ignore:test
-matfax/ignore:0-test
-matfax/ignore:0.0-test
-matfax/ignore:0.0.2-test
+gofunky/ignore:0
+gofunky/ignore:0.0
+gofunky/ignore:0.0.2
+gofunky/ignore:test
+gofunky/ignore:0-test
+gofunky/ignore:0.0-test
+gofunky/ignore:0.0.2-test
 ```
 
 ### find
@@ -312,7 +361,7 @@ If no root tag vector is required, simply remove the respective `ARG` instructio
 
 The target repository will be derived (e.g, the one to check using the `find` command)
 from the `ARG` instruction that is called `REPOSITORY`.
-If no target repository is required (e.g., for a `build` command), simply remove the respective `ARG` instruction.
+If no target repository is required, simply remove the respective `ARG` instruction.
 
 #### Versioned FROM Instructions
 

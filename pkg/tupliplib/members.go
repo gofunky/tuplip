@@ -215,14 +215,19 @@ func (s *TuplipSource) getTags() (tagMap map[string]mapset.Set, err error) {
 	return
 }
 
+// prefix adds the target repository as prefix to the output tags.
+func (s *TuplipSource) prefix(inputTag string) (targetTag string) {
+	targetTag = inputTag
+	if repo := s.Repository; repo != "" {
+		targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
+	}
+	return
+}
+
 // dockerTag tags all inputTags given the sourceTag.
 func (s *TuplipSource) dockerTag(sourceTag string) func(inputTag string) (string, error) {
 	return func(inputTag string) (o string, err error) {
-		var targetTag = inputTag
-		if repo := s.Repository; repo != "" {
-			targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
-		}
-		cmd := exec.Command("docker", "tag", sourceTag, targetTag)
+		cmd := exec.Command("docker", "tag", sourceTag, inputTag)
 		logger.InfoWith("execute").
 			String("args", strings.Join(cmd.Args, " ")).
 			Write()
@@ -231,7 +236,7 @@ func (s *TuplipSource) dockerTag(sourceTag string) func(inputTag string) (string
 				return "", err
 			}
 		}
-		logger.InfoWith("tagged").String("tag", targetTag).Write()
+		logger.InfoWith("tagged").String("tag", inputTag).Write()
 		return inputTag, nil
 	}
 }
@@ -239,11 +244,9 @@ func (s *TuplipSource) dockerTag(sourceTag string) func(inputTag string) (string
 // dockerPush pushes all inputTags to the Docker Hub and prepends a success or fail message to the respective tags.
 func (s *TuplipSource) dockerPush() func(inputTag string) (tagMsg string, err error) {
 	tagMap, _ := s.getTags()
-	return func(inputTag string) (tagMsg string, err error) {
-		var targetTag = inputTag
-		if repo := s.Repository; repo != "" {
-			targetTag = strings.Join([]string{repo, targetTag}, VersionSeparator)
-		}
+	return func(targetTag string) (tagMsg string, err error) {
+		splitTarget := strings.Split(targetTag, VersionSeparator)
+		inputTag := splitTarget[len(splitTarget)-1]
 		cmd := exec.Command("docker", "push", targetTag)
 		logger.InfoWith("execute").
 			String("args", strings.Join(cmd.Args, " ")).
