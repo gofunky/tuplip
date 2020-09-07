@@ -15,6 +15,7 @@ tuplip generates and checks Docker tags in a transparent and convention-forming 
 
 <!-- toc -->
 
+- [What tuplip can do for you](#what-tuplip-can-do-for-you)
 - [Installation](#installation)
   * [Get the binary](#get-the-binary)
   * [Get the library](#get-the-library)
