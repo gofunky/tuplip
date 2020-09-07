@@ -5,10 +5,10 @@
   ],
   "separateMinorPatch": true,
   "patch": {
-    "automerge": true,
-    "labels": [
-      "dependencies"
-    ]
+    "automerge": true
+  },
+  "pin": {
+    "automerge": true
   },
   "lockFileMaintenance": {
     "automerge": true
@@ -18,6 +18,10 @@
       "security"
     ]
   },
+  "labels": [
+    "dependencies",
+    "chore"
+  ],
   "postUpdateOptions": [
     "gomodTidy"
   ]
