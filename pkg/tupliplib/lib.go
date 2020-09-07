@@ -107,6 +107,7 @@ func (s *TuplipSource) Build(requireSemver bool) (stream *stream.Stream) {
 	stream.Filter(s.tuplip.withFilter)
 	stream.FlatMap(s.tuplip.join)
 	stream.Filter(nonEmpty)
+	stream.Map(s.prefix)
 	return
 }
 
@@ -116,6 +117,7 @@ func (s *TuplipSource) Straight() (stream *stream.Stream) {
 	stream = s.stream
 	stream.Map(withoutWildcard)
 	stream.Filter(nonEmpty)
+	stream.Map(s.prefix)
 	return
 }
 
