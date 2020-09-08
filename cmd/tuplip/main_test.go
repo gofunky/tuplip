@@ -6,6 +6,9 @@ import (
 	"testing"
 )
 
+const WithoutRepository = "../../test/WithoutRepository.Dockerfile"
+const WithRepository = "../../test/WithRepository.Dockerfile"
+
 func TestBuild(t *testing.T) {
 	type testBuild struct {
 		args     []string
@@ -19,7 +22,7 @@ func TestBuild(t *testing.T) {
 	matrix := []testBuild{
 		{},
 		{
-			criteria: "tag",
+			criteria: "source from foo goo",
 			args:     []string{"-s"},
 			stdErr: map[string]bool{
 				"queueing build":           false,
@@ -28,15 +31,7 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			criteria: "push",
-			args:     []string{"-s"},
-			stdErr: map[string]bool{
-				"queueing build": false,
-				"foo-goo":        false,
-			},
-		},
-		{
-			criteria: "build",
+			criteria: "build from foo",
 			args:     []string{"--filter=foo"},
 			stdOut: map[string]bool{
 				"goo":                false,
@@ -46,6 +41,21 @@ func TestBuild(t *testing.T) {
 				"gofunky/ignore:2.4": false,
 				"gofunky/git:2.4":    false,
 				"latest":             false,
+			},
+		},
+		{
+			criteria: WithRepository,
+			args:     []string{"--filter=golang,foo"},
+			stdOut: map[string]bool{
+				"2.4":                                  false,
+				"gofunky/git:2.4":                      false,
+				"gofunky/ignore:2.4":                   false,
+				"docker18.9.0-foo-golang":              false,
+				"gofunky/git:docker18.9.0-foo-golang1": true,
+				"foo":                                  false,
+				"gofunky/git:foo":                      false,
+				"golang":                               false,
+				"gofunky/git:golang":                   false,
 			},
 		},
 		{
@@ -65,15 +75,17 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			criteria: "../../test/WithoutRepository.Dockerfile",
-			args:     []string{"../../test/WithRepository.Dockerfile"},
+			criteria: WithoutRepository,
+			args:     []string{WithRepository},
 			stdOut: map[string]bool{
-				"foo":                   false,
-				"2.4":                   false,
-				"latest":                false,
-				"gofunky/ignore:latest": true,
-				"gofunky/ignore:2.4":    true,
-				"gofunky/ignore:foo":    true,
+				"foo":                      false,
+				"2.4":                      false,
+				"latest":                   false,
+				"golang":                   false,
+				"docker18.9.0-foo-golang1": false,
+				"gofunky/ignore:latest":    true,
+				"gofunky/ignore:2.4":       true,
+				"gofunky/ignore:foo":       true,
 			},
 			replace: true,
 		},
@@ -95,7 +107,7 @@ func TestBuild(t *testing.T) {
 	}
 	tests := []testBuild{
 		{
-			args: []string{"build", "from", "file", "../../test/WithoutRepository.Dockerfile"},
+			args: []string{"build", "from", "file", WithoutRepository},
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile": true,
 				"queueing build":                true,
@@ -109,7 +121,7 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"build", "from", "file", "../../test/WithoutRepository.Dockerfile", "--root-version=latest", "-e"},
+			args: []string{"build", "from", "file", WithoutRepository, "--root-version=latest", "-e"},
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile":  true,
 				"queueing build":                 true,
@@ -149,7 +161,7 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"find", "from", "file", "../../test/WithRepository.Dockerfile"},
+			args: []string{"find", "from", "file", WithRepository},
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile": true,
 				"queueing find":                 true,
@@ -179,7 +191,7 @@ func TestBuild(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			args: []string{"tag", "source", "from", "file", "../../test/WithoutRepository.Dockerfile"},
+			args: []string{"tag", "source", "from", "file", WithoutRepository},
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile": true,
 				"queueing build":                true,
@@ -188,10 +200,12 @@ func TestBuild(t *testing.T) {
 				"straight channel enabled":      false,
 			},
 			stdOut: map[string]bool{
-				"2.4":                true,
-				"foo":                true,
-				"gofunky/ignore:foo": false,
-				"6.3.8":              false,
+				"golang":                   true,
+				"foo":                      true,
+				"docker18.9.0-foo-golang1": true,
+				"2.4":                      true,
+				"gofunky/ignore:foo":       false,
+				"6.3.8":                    false,
 			},
 		},
 		{
@@ -205,7 +219,7 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"tag", "source", "to", "gofunky/git", "from", "file", "../../test/WithRepository.Dockerfile"},
+			args: []string{"tag", "source", "to", "gofunky/git", "from", "file", WithRepository},
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile":     true,
 				"queueing build":                    true,
@@ -215,9 +229,12 @@ func TestBuild(t *testing.T) {
 				"straight channel enabled":          false,
 			},
 			stdOut: map[string]bool{
-				"gofunky/git:2.4":   true,
-				"2.4":               false,
-				"gofunky/git:6.3.8": false,
+				"gofunky/git:2.4":                     true,
+				"gofunky/git:golang":                  true,
+				"gofunky/git:foo":                     true,
+				"gofunky/git:docker18.9.0-foo-golang": true,
+				"2.4":                                 false,
+				"gofunky/git:6.3.8":                   false,
 			},
 		},
 		{
@@ -232,7 +249,7 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"push", "from", "file", "../../test/WithRepository.Dockerfile"},
+			args: []string{"push", "from", "file", WithRepository},
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile":  true,
 				"queueing build":                 true,
@@ -259,7 +276,7 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"push", "to", "gofunky/git", "from", "file", "../../test/WithRepository.Dockerfile"},
+			args: []string{"push", "to", "gofunky/git", "from", "file", WithRepository},
 			stdErr: map[string]bool{
 				"queueing read from Dockerfile": true,
 				"queueing build":                true,
@@ -282,14 +299,14 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"push", "source", "from", "file", "../../test/WithRepository.Dockerfile"},
+			args: []string{"push", "source", "from", "file", WithRepository},
 			stdErr: map[string]bool{
-				"queueing read from Dockerfile":        true,
-				"queueing build":                       true,
-				"queueing tagging":                     true,
-				"queueing push":                        true,
-				"docker tag source gofunky/ignore:foo": true,
-				"docker push gofunky/ignore:foo":       true,
+				"queueing read from Dockerfile":               true,
+				"queueing build":                              true,
+				"queueing tagging":                            true,
+				"queueing push":                               true,
+				"docker tag source gofunky/ignore:foo-golang": true,
+				"docker push gofunky/ignore:foo-golang":       true,
 			},
 		},
 		{
@@ -305,14 +322,14 @@ func TestBuild(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"push", "source", "to", "gofunky/git", "from", "file", "../../test/WithRepository.Dockerfile"},
+			args: []string{"push", "source", "to", "gofunky/git", "from", "file", WithRepository},
 			stdErr: map[string]bool{
-				"queueing read from Dockerfile":     true,
-				"queueing build":                    true,
-				"queueing tagging":                  true,
-				"queueing push":                     true,
-				"docker tag source gofunky/git:foo": true,
-				"docker push gofunky/git:foo":       true,
+				"queueing read from Dockerfile":            true,
+				"queueing build":                           true,
+				"queueing tagging":                         true,
+				"queueing push":                            true,
+				"docker tag source gofunky/git:foo-golang": true,
+				"docker push gofunky/git:foo-golang":       true,
 			},
 		},
 		{

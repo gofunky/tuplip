@@ -74,7 +74,8 @@ func (t *Tuplip) FromFile(src string, overrideVersion string) (source *TuplipSou
 	if err != nil {
 		return nil, err
 	}
-	var lines = strings.Split(string(content), "\n")
+	unixLines := strings.ReplaceAll(string(content), "\r\n", "\n")
+	var lines = strings.Split(unixLines, "\n")
 	if overrideVersion != "" {
 		lines = append(lines, WildcardInstruction+overrideVersion)
 	}

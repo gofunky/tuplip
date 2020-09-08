@@ -167,7 +167,13 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 // withFilter excludes all tags without the given set of tag vectors from the output set.
 func (t Tuplip) withFilter(inputSet mapset.Set) bool {
 	for _, filterVector := range t.Filter {
-		if !inputSet.Contains(mapset.NewSet(filterVector)) {
+		var containsVector bool
+		for tags := range inputSet.ThreadSafe().Iter() {
+			if tags.(mapset.Set).ThreadSafe().Contains(filterVector) {
+				containsVector = true
+			}
+		}
+		if !containsVector {
 			logger.InfoWith("filtering tag since the required filter vector is missing").
 				String("tag", inputSet.String()).
 				String("filter vector", filterVector).
