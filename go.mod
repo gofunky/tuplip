@@ -21,4 +21,5 @@ require (
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f
 	github.com/sirupsen/logrus v1.6.0 // indirect
+	go.uber.org/atomic v1.6.0
 )

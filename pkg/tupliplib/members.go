@@ -7,6 +7,7 @@ import (
 	"github.com/gofunky/pyraset/v2"
 	"github.com/gofunky/semver"
 	"github.com/nokia/docker-registry-client/registry"
+	"go.uber.org/atomic"
 	"os/exec"
 	"sort"
 	"strings"
@@ -167,15 +168,15 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 // withFilter excludes all tags without the given set of tag vectors from the output set.
 func (t Tuplip) withFilter(inputSet mapset.Set) bool {
 	for _, filterVector := range t.Filter {
-		var containsVector bool
+		var containsVector = atomic.NewBool(false)
 		inputSet.Each(func(elem interface{}) (abort bool) {
 			if elem.(mapset.Set).Contains(filterVector) {
-				containsVector = true
+				containsVector.Store(true)
 				abort = true
 			}
 			return
 		})
-		if !containsVector {
+		if !containsVector.Load() {
 			logger.InfoWith("filtering tag since the required filter vector is missing").
 				String("tag", inputSet.String()).
 				String("filter vector", filterVector).
