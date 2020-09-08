@@ -168,8 +168,8 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 func (t Tuplip) withFilter(inputSet mapset.Set) bool {
 	for _, filterVector := range t.Filter {
 		var containsVector bool
-		for tags := range inputSet.Iter() {
-			if tags.(mapset.Set).Contains(filterVector) {
+		for tags := range inputSet.ThreadSafe().Iter() {
+			if tags.(mapset.Set).ThreadSafe().Contains(filterVector) {
 				containsVector = true
 			}
 		}
