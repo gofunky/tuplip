@@ -168,11 +168,13 @@ func (t Tuplip) addLatestTag(inputSet mapset.Set) mapset.Set {
 func (t Tuplip) withFilter(inputSet mapset.Set) bool {
 	for _, filterVector := range t.Filter {
 		var containsVector bool
-		for tags := range inputSet.ThreadSafe().Iter() {
-			if tags.(mapset.Set).ThreadSafe().Contains(filterVector) {
+		inputSet.Each(func(elem interface{}) (abort bool) {
+			if elem.(mapset.Set).Contains(filterVector) {
 				containsVector = true
+				abort = true
 			}
-		}
+			return
+		})
 		if !containsVector {
 			logger.InfoWith("filtering tag since the required filter vector is missing").
 				String("tag", inputSet.String()).
