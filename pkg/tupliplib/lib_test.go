@@ -131,6 +131,31 @@ func TestTuplipStream(t *testing.T) {
 			t:         Tuplip{ExclusiveLatest: true},
 			want:      []string{"latest"},
 		},
+		{
+			name:      "Filter Unary Unversioned",
+			buildArgs: &args{input: []string{"_:1.0", "foo", "goo"}},
+			t:         Tuplip{Filter: []string{"foo"}},
+			want:      []string{"foo", "foo-goo", "1-foo", "1.0-foo", "1-foo-goo", "1.0-foo-goo"},
+		},
+		{
+			name:      "Filter Unary Versioned",
+			buildArgs: &args{input: []string{"_:1", "docker", "alpine:3.8"}},
+			t:         Tuplip{Filter: []string{"alpine"}},
+			want: []string{
+				"1-alpine3.8", "1-alpine-docker", "alpine-docker", "alpine", "alpine3", "alpine3.8",
+				"alpine3-docker", "alpine3.8-docker", "1-alpine", "1-alpine3-docker", "1-alpine3.8-docker", "1-alpine3",
+			},
+		},
+		{
+			name:      "Filter Binary Versioned",
+			buildArgs: &args{input: []string{"_:1", "docker:2", "alpine:3.8"}},
+			t:         Tuplip{Filter: []string{"alpine", "docker"}},
+			want: []string{
+				"1-alpine-docker", "1-alpine-docker2", "alpine-docker", "alpine-docker2",
+				"1-alpine3-docker", "1-alpine3-docker2", "alpine3-docker", "alpine3-docker2",
+				"1-alpine3.8-docker", "1-alpine3.8-docker2", "alpine3.8-docker", "alpine3.8-docker2",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name+"_BuildFromReader", func(t *testing.T) {
@@ -179,7 +204,7 @@ func TestTuplipStream(t *testing.T) {
 					t.Errorf("Tuplip.Push() error = %v, wantErr %v", gotErr, tt.wantErr)
 					return
 				}
-			case <-time.After(500 * time.Millisecond):
+			case <-time.After(1000 * time.Millisecond):
 				t.Fatal("Waited too long ...")
 			}
 			gotTagOutput := mapset.NewSet(tagCollector.Get()...)
