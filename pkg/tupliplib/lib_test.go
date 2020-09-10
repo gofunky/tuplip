@@ -410,6 +410,16 @@ func TestTuplipStream_PushStraightFromSlice(t *testing.T) {
 			pushArgs: &args{input: []string{"alias", "foo"}},
 			want:     []string{"alias", "foo"},
 		},
+		{
+			name:     "Simple Binary Tag With Versions",
+			pushArgs: &args{input: []string{"alias", "foo:1.2.3"}},
+			want:     []string{"alias", "foo1.2.3"},
+		},
+		{
+			name:     "Simple Binary Tag With Versions",
+			pushArgs: &args{input: []string{"alias", "foo1.2.3"}},
+			want:     []string{"alias", "foo1.2.3"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

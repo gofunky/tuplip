@@ -49,6 +49,11 @@ func withoutFrom(input string) string {
 	return strings.TrimSpace(strings.TrimPrefix(input, DockerFromInstruction))
 }
 
+// withoutWildcard removes vector-like colon concatenation from tags.
+func withoutColons(input string) string {
+	return strings.Replace(input, ":", "", 1)
+}
+
 // withoutWildcard removes the wildcard prefixes.
 func withoutWildcard(input string) string {
 	return strings.TrimSpace(strings.TrimPrefix(input, WildcardDependency+VersionSeparator))

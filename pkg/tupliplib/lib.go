@@ -117,6 +117,7 @@ func (s *TuplipSource) Straight() (stream *stream.Stream) {
 	logger.Info("straight channel enabled")
 	stream = s.stream
 	stream.Map(withoutWildcard)
+	stream.Map(withoutColons)
 	stream.Filter(nonEmpty)
 	stream.Map(s.prefix)
 	return
