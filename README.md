@@ -10,6 +10,7 @@
 [![Microbadger Version](https://images.microbadger.com/badges/version/gofunky/tuplip.svg)](https://microbadger.com/images/gofunky/tuplip "Docker Version")
 [![Microbadger Layers](https://images.microbadger.com/badges/image/gofunky/tuplip.svg)](https://microbadger.com/images/gofunky/tuplip "Docker Layers")
 [![Docker Pulls](https://img.shields.io/docker/pulls/gofunky/tuplip.svg)](https://hub.docker.com/r/gofunky/tuplip)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgofunky%2Ftuplip.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgofunky%2Ftuplip?ref=badge_shield)
 
 tuplip generates and checks Docker tags in a transparent and convention-forming way
 
@@ -599,3 +600,7 @@ tuplip push image to gofunky/ignore from foo goo -s --verbose
 gofunky/ignore:foo
 gofunky/ignore:goo
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgofunky%2Ftuplip.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgofunky%2Ftuplip?ref=badge_large)
