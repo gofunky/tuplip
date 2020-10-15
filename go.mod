@@ -15,7 +15,7 @@ require (
 	github.com/gofunky/semver v3.5.2+incompatible
 	github.com/google/go-cmp v0.5.2
 	github.com/gorilla/mux v1.7.4 // indirect
-	github.com/nokia/docker-registry-client v0.0.0-20190305095957-e91f10057c5b
+	github.com/nokia/docker-registry-client v0.0.0-20201015093031-af1a6d3b4fb1
 	github.com/oleiade/reflections v1.0.0
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
