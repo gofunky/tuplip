@@ -19,7 +19,7 @@ require (
 	github.com/oleiade/reflections v1.0.0
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
-	github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f
+	github.com/rendon/testcli v1.0.0
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	go.uber.org/atomic v1.6.0
 )
