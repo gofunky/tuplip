@@ -3,7 +3,7 @@ module github.com/gofunky/tuplip
 go 1.14
 
 require (
-	github.com/alecthomas/kong v0.2.11
+	github.com/alecthomas/kong v0.2.15
 	github.com/asaskevich/govalidator v0.0.0-20200819183940-29e1ff8eb0bb // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
