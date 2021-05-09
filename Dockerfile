@@ -14,7 +14,7 @@ RUN go get -v github.com/ahmetb/govvv
 RUN govvv build -v -o /go/bin/tuplip ./cmd/tuplip
 RUN go test -v ./...
 
-FROM docker:19.03-git
+FROM docker:20.10-git
 LABEL maintainer="mat@fax.fyi"
 
 COPY --from=i__builder /go/bin/tuplip /usr/local/bin/tuplip
