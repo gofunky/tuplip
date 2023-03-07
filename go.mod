@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/alecthomas/kong v0.2.11
 	github.com/asaskevich/govalidator v0.0.0-20200819183940-29e1ff8eb0bb // indirect
-	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/docker/distribution v2.8.0+incompatible // indirect
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
 	github.com/emicklei/dot v0.14.0
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
