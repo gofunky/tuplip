@@ -16,7 +16,7 @@ require (
 	github.com/google/go-cmp v0.5.2
 	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/nokia/docker-registry-client v0.0.0-20190305095957-e91f10057c5b
-	github.com/oleiade/reflections v1.0.0
+	github.com/oleiade/reflections v1.0.1
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f
