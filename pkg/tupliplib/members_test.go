@@ -1,11 +1,12 @@
 package tupliplib
 
 import (
-	"github.com/gofunky/pyraset/v2"
-	"github.com/google/go-cmp/cmp"
 	"testing"
 
-	"github.com/gofunky/semver"
+	"github.com/gofunky/pyraset/v2"
+	"github.com/google/go-cmp/cmp"
+
+	"github.com/blang/semver/v4"
 )
 
 func TestTuplip_buildTag(t *testing.T) {

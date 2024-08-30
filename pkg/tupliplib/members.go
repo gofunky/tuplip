@@ -3,14 +3,15 @@ package tupliplib
 import (
 	"errors"
 	"fmt"
-	"github.com/go-ozzo/ozzo-validation"
-	"github.com/gofunky/pyraset/v2"
-	"github.com/gofunky/semver"
-	"github.com/nokia/docker-registry-client/registry"
-	"go.uber.org/atomic"
 	"os/exec"
 	"sort"
 	"strings"
+
+	"github.com/blang/semver/v4"
+	"github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/gofunky/pyraset/v2"
+	"github.com/nokia/docker-registry-client/registry"
+	"go.uber.org/atomic"
 )
 
 // buildTag parses a semantic version with the given version digits. Optionally, prefix an alias tag.

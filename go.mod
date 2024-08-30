@@ -1,20 +1,22 @@
 module github.com/gofunky/tuplip
 
-go 1.22
+go 1.22.6
+
+toolchain go1.23.0
 
 require (
-	github.com/alecthomas/kong v0.2.11
-	github.com/emicklei/dot v0.14.0
+	github.com/alecthomas/kong v0.9.0
+	github.com/blang/semver/v4 v4.0.0
+	github.com/emicklei/dot v1.6.2
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
-	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
+	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/gofunky/automi v0.3.5
 	github.com/gofunky/pyraset/v2 v2.0.5
-	github.com/gofunky/semver v3.5.2+incompatible
 	github.com/google/go-cmp v0.5.2
-	github.com/nokia/docker-registry-client v0.0.0-20190305095957-e91f10057c5b
-	github.com/oleiade/reflections v1.0.0
-	github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f
-	go.uber.org/atomic v1.6.0
+	github.com/nokia/docker-registry-client v0.0.0-20201015093031-af1a6d3b4fb1
+	github.com/oleiade/reflections v1.1.0
+	github.com/rendon/testcli v1.0.0
+	go.uber.org/atomic v1.11.0
 )
 
 require (
@@ -30,7 +32,6 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	golang.org/x/sys v0.0.0-20190422165155-953cdadca894 // indirect
 )
