@@ -13,7 +13,7 @@ require (
 	github.com/google/go-cmp v0.5.2
 	github.com/nokia/docker-registry-client v0.0.0-20190305095957-e91f10057c5b
 	github.com/oleiade/reflections v1.0.0
-	github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f
+	github.com/rendon/testcli v1.0.0
 	go.uber.org/atomic v1.6.0
 )
 
