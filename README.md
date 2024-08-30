@@ -77,10 +77,10 @@ to parse its FROM instructions as vectors.
 
 ## Installation
 
-### Get the binary
+### Install the binary
 
 ```bash
-go get -u github.com/gofunky/tuplip/cmd/tuplip
+go install github.com/gofunky/tuplip/cmd/tuplip@main
 ```
 
 ### Get the library
