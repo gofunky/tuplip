@@ -1,4 +1,3 @@
-github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/OneOfOne/xxhash v1.2.8 h1:31czK/TI9sNkxIKfaUfGlU47BAxQ0ztGgd9vPyqimf8=
 github.com/OneOfOne/xxhash v1.2.8/go.mod h1:eZbhyaAYD41SGSSsnmcpxVoRiQ/MPUTjUdIIOT9Um7Q=
@@ -6,7 +5,6 @@ github.com/alecthomas/kong v0.2.11 h1:RKeJXXWfg9N47RYfMm0+igkxBCTF4bzbneAxaqid0c
 github.com/alecthomas/kong v0.2.11/go.mod h1:kQOmtJgV+Lb4aj+I2LEn40cbtawdWJ9Y8QLq+lElKxE=
 github.com/asaskevich/govalidator v0.0.0-20200819183940-29e1ff8eb0bb h1:kvlW1qyM1aU3xeyeIVTU2jx5fSvjKpsU3aXvuaCMg3Q=
 github.com/asaskevich/govalidator v0.0.0-20200819183940-29e1ff8eb0bb/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
-github.com/cespare/xxhash v1.1.0 h1:a6HrQnmkObjyL+Gs60czilIUGqrzKutQD6XZog3p+ko=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -31,9 +29,7 @@ github.com/gofunky/automi v0.3.5 h1:syLHowzXTVwoGrqmrToD50KpHfADdeJkhJD/4l9QL8w=
 github.com/gofunky/automi v0.3.5/go.mod h1:h2YIjVkCPZD4tUTx+8ro8+9LiEU2wOxh4CZW9n2zdgw=
 github.com/gofunky/hashstructure v1.2.2 h1:QSX2fv+SjTZA7e0ICjQm4AU5iZoJdzs/BN9TAoFlkfE=
 github.com/gofunky/hashstructure v1.2.2/go.mod h1:ChxDtCwR2t7VCV6BmlfzW97DGZtwOtyVPy7LVjF8j5E=
-github.com/gofunky/pyraset v0.0.0-20190201174058-c5e2af1b9163 h1:+3XrDmZZntKYqbR8npbiaQAegnb4pVxF6/yvFtm1XEM=
 github.com/gofunky/pyraset v0.0.0-20190201174058-c5e2af1b9163/go.mod h1:cjNWujqnT1n2L0REZJv96oRqtlXdHy76fm10A2goJ1M=
-github.com/gofunky/pyraset/v2 v2.0.2 h1:eI2hiJQ8O7L1US5p7rJs1yAkaPJDnSGzh44d6Ye4KZs=
 github.com/gofunky/pyraset/v2 v2.0.2/go.mod h1:gKGNa3ukkBmlBHt1PYM3d6MI5UjWJ5Am5CCuzRMSVGY=
 github.com/gofunky/pyraset/v2 v2.0.5 h1:OoYSCZw2O28jYStxBMjPeOE9F9Y1rJCVa2ZheorkuSo=
 github.com/gofunky/pyraset/v2 v2.0.5/go.mod h1:G3jLDz/aZqIdsy5Yk8/NANPdL7+ECSvFAr3FldlrwYY=
@@ -61,10 +57,8 @@ github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f h1:onGP+qmYmjKs7pkm
 github.com/rendon/testcli v0.0.0-20161027181003-6283090d169f/go.mod h1:cq57a4l475CeMvE7RRpSui1MEqCmhirIt1E7kl8BC2Q=
 github.com/sirupsen/logrus v1.6.0 h1:UBcNElsrwanuuMsnGSlYmtmgbb23qDR5dG+6X6Oo89I=
 github.com/sirupsen/logrus v1.6.0/go.mod h1:7uNnSEd1DgxDLC74fIahvMZmmYsHGZGEOFrfsX/uA88=
-github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72 h1:qLC7fQah7D6K1B0ujays3HV9gkFtllcxhzImRR7ArPQ=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
-github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1w=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
