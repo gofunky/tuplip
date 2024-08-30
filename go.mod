@@ -3,7 +3,7 @@ module github.com/gofunky/tuplip
 go 1.22
 
 require (
-	github.com/alecthomas/kong v0.2.11
+	github.com/alecthomas/kong v0.9.0
 	github.com/emicklei/dot v0.14.0
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
@@ -30,7 +30,6 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	golang.org/x/sys v0.0.0-20190422165155-953cdadca894 // indirect
 )
