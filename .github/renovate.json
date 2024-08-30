@@ -1,7 +1,7 @@
 {
   "extends": [
-    "config:base",
-    ":semanticCommitType(chore)"
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
   ],
   "separateMinorPatch": true,
   "patch": {
@@ -14,9 +14,9 @@
     "automerge": true
   },
   "vulnerabilityAlerts": {
-    "labels": [
-      "security"
-    ]
+    "automerge": true,
+    "labels": ["security"],
+    "assignees": ["@matfax"]
   },
   "labels": [
     "dependencies",
