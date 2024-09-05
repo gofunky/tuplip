@@ -2,7 +2,7 @@ module github.com/gofunky/tuplip
 
 go 1.22.6
 
-toolchain go1.23.0
+toolchain go1.23.1
 
 require (
 	github.com/alecthomas/kong v0.9.0
@@ -30,7 +30,6 @@ require (
 	github.com/go-faces/logger v0.0.0-20180617163310-c221c1151623 // indirect
 	github.com/gofunky/hashstructure v1.3.0 // indirect
 	github.com/gorilla/mux v1.7.4 // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
