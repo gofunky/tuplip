@@ -5,7 +5,7 @@ go 1.22.6
 toolchain go1.23.1
 
 require (
-	github.com/alecthomas/kong v0.9.0
+	github.com/alecthomas/kong v1.2.1
 	github.com/blang/semver/v4 v4.0.0
 	github.com/emicklei/dot v1.6.2
 	github.com/francoispqt/onelog v0.0.0-20190306043706-8c2bb31b10a4
