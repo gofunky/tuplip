@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: check out code
         uses: actions/checkout@v4.1.7
-      - uses: arnested/go-version-action@v1.1.16
+      - uses: arnested/go-version-action@0a5fcb7e223e96f0c307375b6cabb184eac1cc79 # v1.1.17
         id: versions
 
   build:
