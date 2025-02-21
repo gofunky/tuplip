@@ -12,7 +12,7 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/gofunky/automi v0.3.5
 	github.com/gofunky/pyraset/v2 v2.0.5
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/nokia/docker-registry-client v0.0.0-20201015093031-af1a6d3b4fb1
 	github.com/oleiade/reflections v1.1.0
 	github.com/rendon/testcli v1.0.0
