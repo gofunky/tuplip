@@ -2,7 +2,7 @@ module github.com/gofunky/tuplip
 
 go 1.22.6
 
-toolchain go1.23.1
+toolchain go1.23.12
 
 require (
 	github.com/alecthomas/kong v0.9.0
