@@ -17,7 +17,7 @@ jobs:
       latest: ${{ steps.versions.outputs.latest }}
     steps:
       - name: check out code
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: arnested/go-version-action@v1.1.16
         id: versions
 
@@ -36,7 +36,7 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: check out code
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
     
     - name: install
       run: go install -mod=readonly ./cmd/tuplip
